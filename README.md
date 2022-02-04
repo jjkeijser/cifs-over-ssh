@@ -1,37 +1,37 @@
-## Welcome to GitHub Pages
+## Cifs-over-SSH 
 
-You can use the [editor on GitHub](https://github.com/jjkeijser/cifs-over-ssh/edit/main/README.md) to maintain and preview the content for your website in Markdown files.
+Sometimes there is a need to mount a remote Windows/Samba directory, but all you have is
+an SSH connection to a remote server close to the fileserver. 
+This tutorial tries to explain how you can set up these Windows shares on Windows 10.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+The concept behind mounting shares using SSH is this:
 
-### Markdown
+- The SSH protocol has a feature known as port-forwarding. This feature allows you to forward all 
+  traffic from a TCP/IP network port on your local computer to another port on another computer at
+  the "other" side of the SSH connection.
+- The Windows File Sharing protocol, a.k.a.CIFS, uses TCP/IP port 445 to communicate between the
+  client and the server. Older versions of Windows also allowed the use of TCP/IP port 139 to 
+  communicate between the client and the server.
+- Unfortunately, it turns out to be quite hard to redirect local port 445 to another computer, as
+  the OS also wants this port all for itself. However, with some special portproxy rules it is
+  still possible to grab port 445 before the OS does.
+- Thus, by configuring SSH in just the right way, we can redirect all traffic from the TCP/IP port 445
+  on your local computer to the remote Windows file server.
+- The result is that this will magically allow you to create a network share to view the remote directory
+  on your home computer.
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+This tutorial has been tested on Windows 2000, XP, Vista, 7, 8 and 10:
 
-```markdown
-Syntax highlighted code block
+- Windows 10 for those who are using Windows 10 with the built-in OpenSSH client.
+- Windows 10 using PuTTY for those who are using Windows 10 in combination with the PuTTY SSH client.
 
-# Header 1
-## Header 2
-### Header 3
+**Note** This tutorial does not work on Windows Server 2016 or 2019. If someone finds a way to make
+  it work for Windows Server editions please let me know!
 
-- Bulleted
-- List
+For Windows 2000/XP/Vista/7/8 the following legacy tutorial pages are available:
 
-1. Numbered
-2. List
+- [Windows 8](Win8/)
+- [Windows 7](Win7/)
+- [Windows Vista](WinVista/)
+- [Windows XP](WinXP/)
 
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [Basic writing and formatting syntax](https://docs.github.com/en/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/jjkeijser/cifs-over-ssh/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
