@@ -1,0 +1,409 @@
+<html>
+<title>
+CIFS-over-SSH for Windows 8
+</title>
+<body>
+<h1>Mounting your Nikhef home directory using SSH<br>
+for Windows 8</h1>
+<small><em>(Updated 27/Sep/2019)</em></small>
+
+<h2>Introduction</h2>
+
+This tutorial contains screenshots for the English version of Windows 8.
+Separate instructions for other versions of Windows are also available:
+<ul>
+<li><a href="../WinVista/index.html">Windows Vista</a>.
+</li>   
+<li><a href="../Win7/index.html">Windows 7</a>.
+</li>
+<li><a href="../Win10/index.html">Windows 10</a>.
+</li>
+</ul>   
+The instructions for Windows 2000/XP are also still <a href="../WinXP/index.html">available</a>.
+<br>
+
+To be able to mount a Windows share over SSH we will need 
+<ul>
+<li>Administrator access to the local computer, including the ability to 
+    <i>elevate</i> privileges. If you don't know what I am talking about then 
+    stop reading right here.
+</li>
+<li><a href="http://www.chiark.greenend.org.uk/~sgtatham/putty/">PuTTY v0.58+</a>,
+    which is an excellent and free implementation of SSH for Windows.
+    It is assumed that you are familiar with the PuTTY user interface.
+</li>
+<li>One real or virtual network adapter, bound to the <i>Client for Microsoft Networks</i>
+    driver.
+    <br>
+    Normally you should already have such an adapter, as otherwise you
+    would not be able to mount any Windows shares.
+</li>
+<li>One real or virtual network adapter, <b>NOT</b> bound to the 
+    <i>Client for Microsoft Networks</i> driver.
+</li>
+</ul>
+
+<br><br>
+
+This part of the tutorial is split into the following steps:
+<ol>
+<li>As most people do not have a spare real network adapter in their computer,
+    we will add an extra virtual network adapter by 
+    <a href="#Install">installing</a> the
+    <b>Microsoft&nbsp;KM-TEST&nbsp;Loopback&nbsp;Adapter</b>.
+</li>
+<li>After that, the network adapter must be properly 
+    <a href="#ConfigureAdapter">configured</a>.
+</li>
+<li>Furthermore, a few Windows system drivers need to be
+    <a href="#ConfigureDrivers">tweaked</a>.
+</li>
+<li>Next, reboot Windows to <a href="#Verify">verify</a> that we've been able to 
+    grab port 445 and to see if the <code>smb</code> and <code>lanmanserver</code>
+    drivers are up and running.
+</li>
+<li>If the port was grabbed, but the drivers are not running, then create a task 
+    using the <a href="WinAddTask.html">Windows Task Scheduler</a> to start the drivers.
+</li>
+<li>Next, we set up a special
+    <a href="#ConfigurePuTTY">PuTTY</a> session with the right port-forwarding.
+</li>
+<li>Finally, we start PuTTY and <a href="#MountHome">mount</a> our Nikhef home
+    directory.
+</li>
+<br>
+<li>For those wishing to <a href="#Undo">undo</a> the above steps follow the 
+    instructions at the bottom of this tutorial.
+</li>
+</ol>
+
+<h2><a name="Install">Installing the Loopback Adapter</a></h2>
+
+To install the Loopback adapter follow these steps:
+<ul>
+<li>Start the <b>Add Hardware Wizard</b> by either going 
+    <b>Start->Settings->Control Panel->Add Hardware</b> or by 
+    starting a console window with elevated (Administrator) privileges.
+    In the console window type
+<pre>
+  hdwwiz.exe
+</pre>
+    The Hardware Wizard will come up:<br>
+    <img src="../images/VistaAddHWwiz1.png" alt="wizardStart">
+<li>Click <b>Next</b> to continue:<br>
+    <img src="../images/VistaAddHWwiz2.png" alt="manualSelect">
+    <br>Select <b>Install the hardware that I manually select from a list</b>
+    and click <b>Next</b>.
+</li>
+<li>Now you'll see:<br>
+    <img src="../images/VistaAddHWwiz3.png" alt="networkAdapters">
+    <br>Select the entry <b>Network&nbsp;adapters</b> and click <b>Next</b>.
+</li>
+<li>In the next screen<br>
+    <img src="../images/Win8AddHWwiz4.png" alt="msLoopback">
+    <br>first select <b>Microsoft</b> from the list of <i>Manufacturers</i>
+    and then select <b>Microsoft&nbsp;KM-TEST&nbsp;Loopback&nbsp;Adapter</b> from the
+    list of <i>Network Adapters</i>. Finally, click <b>Next</b> once more.
+</li>
+<li>Almost finished:<br>
+    <img src="../images/VistaAddHWwiz5.png" alt="readyToInstall">
+    <br>This is your last chance to abort, otherwise, click <b>Next</b>.
+</li>
+<li>After a while you should see:<br>
+    <img src="../images/VistaAddHWwiz6.png" alt="finished">
+    <br>Click <b>Finish</b> to exit the Hardware Wizard.
+</li>
+</ul>
+
+You are now ready to configure your newly installed Loopback adapter. Even though
+Windows might not ask you to, reboot anyways (heey, it's a Microsoft OS ;-)).<br>
+From reports I've seen on the Internet a reboot is sometimes required for the 
+loopback adapter to come up properly.
+<br>
+
+<h2><a name="ConfigureAdapter">Configuring the Loopback Adapter</a></h2>
+
+Now that your newly installed loopback adapter is up and running we must configure
+it properly:
+
+<ul>
+<li>Go to the <b>Network Connections Center</b>:<br>
+    <img src="../images/VistaNetworkConns.png" alt="NetworkConnections"><br>
+</li>
+<li>Choose the loopback adapter (usually it is named "Local Area Connection #3")
+    and right-click on it.
+</li>
+<li>Choose <b>Properties</b>, after which a new window will appear<br>
+    <img src="../images/VistaLoopPropertiesGeneral.png" alt="loopProperties">
+    <br>Make sure that
+    <ul>
+    <li>the entry <b>Client for Microsoft Networks</b>
+        is <b>NOT</b> enabled, i.e. does not have a checkmark in front of it.
+    </li>
+    <li>the entry <b>File and Printer sharing for Microsoft Networks</b>
+        is <b>NOT</b> enabled, i.e. does not have a checkmark in front of it.
+    </li>
+    <li>the entry <b>Internet Protocol (TCP/IP)</b> <u>is</u> enabled.
+    </li>
+    </ul>
+</li>
+<li>Select the entry <b>Internet Protocol (TCP/IP)</b>, then click on
+    <b>Properties</b>.
+</li>
+<li>A new window will appear:<br>
+    <img src="../images/VistaLoopPropertiesTCPIP.png" alt="loopPropertiesTCPIP">
+    <br>Select <b>Use the following IP address</b> and fill in the 'IP address'
+    and 'Subnet mask' as above.
+    <br>It is not necessary to fill in the 'Default gateway' or a 'DNS server'.
+</li>
+<li>Click on <b>Advanced</b> to make the following window appear:<br>
+    <img src="../images/VistaLoopPropertiesTCPIPAdv.png" alt="loopPropertiesTCPIPAdv">
+    <br>Deselect <b>Automatic metric</b> and fill in the value of <b>9999</b>
+    as the 'Interface metric' as shown above.
+</li>
+<li>Click on the <b>WINS</b> tab:<br>
+    <img src="../images/VistaLoopPropertiesWINS.png" alt="loopPropertiesWINS">
+    <br>and select <b>Disable NetBIOS over TCP/IP</b>.
+</li>
+<li>Click on <b>OK</b>.
+</li>
+<li>You are now back in the main 'TCP/IP Properties' screen. Click <b>OK</b> again.
+</li>
+<li>You are now back in the main 'Loopback Properties' screen. Click <b>Close</b>.
+</li>
+</ul>
+
+
+<h2><a name="ConfigureDrivers">Tweaking a few Windows drivers</a></h2>
+
+Now we first need to tweak a Windows system driver to overcome the thing that 
+Microsoft broke. The root cause of the problem is that we need to access the
+file share using TCP port <b>445</b>. However, when Windows 8 boots 
+this port is grabbed by the system <code>lanmanserver</code> driver for all interfaces.
+By delaying the startup of the <code>lanmanserver</code> driver and by installing a
+<code>portproxy</code> rule we can circumvent this. This section explains how 
+to do this:
+
+<ul>
+<li>Start a console window with elevated (Administrator) privileges.
+</li>
+
+<li>First, we disable the automatic starting of the <code>lanmanserver</code> driver:<br>
+<pre>
+  sc config lanmanserver start= demand
+</pre>
+<b>NOTE</b> the space after the <code>start= </code> !
+</li>
+
+<li>Make sure the <code>IpHlpSvc</code> driver is running at startup, as otherwise 
+the portproxy rules are not executed:<br>
+<pre>
+  sc config iphlpsvc start= auto
+</pre>
+<b>NOTE</b> the space after the <code>start= </code> !
+<br>
+Thanks to Michael Uhlenberg for pointing out this important driver.
+</li>
+<li>Next we add a <code>portproxy</code> rule to reroute TCP port 445 to a port of
+    our choosing. For this tutorial, I choose <b>44445</b>:
+<pre>
+  netsh interface portproxy add v4tov4 listenaddress=10.255.255.1 listenport=445
+        connectaddress=10.255.255.1 connectport=44445
+</pre>
+  <b>IMPORTANT NOTES</b>:
+  <ul>
+    <li>The <code>listenaddress</code> is the address of the Loopback adapter 
+        configured in the section earlier
+   </li>
+    <li>The <code>connectaddress</code>  must be identical to the <code>listenaddress</code>
+   </li>
+    <li>Using <code>listenaddress=127.0.0.1</code> does not work. Believe me, I've tried.
+   </li>
+  </ul>
+</li>
+</ul>
+
+If all went well you should see something like<br>
+<img src="../images/VistaConsole.png" alt="ConfigureConsole">
+<br>
+The <code>portproxy</code> rule is persistent, so there should be no need to repeat
+this step after a reboot.
+
+<h2><a name="Verify">Reboot and verify</a></h2>
+
+Of course, now that we have disabled the automatic startup of the 'LanmanServer' driver we have to
+reboot Windows before proceeding.
+
+<ul>
+<li>Verify that the <code>portproxy</code> was applied successfully by checking the open ports 
+    on the system. Type in the command console
+<pre>
+  netstat -an | find ":445 "
+</pre>
+    You should see something like
+<pre>
+  TCP    10.255.255.1:445    0.0.0.0:0       LISTENING
+</pre>
+    If you see '<code>0.0.0.0:445</code>' instead then the 'portproxy' rule was not applied
+    correctly.  Verify that the right 'portproxy' rule was used
+<pre>
+   netsh interface portproxy show v4tov4
+</pre>
+   and verify that the <code>IpHlpSvc</code> driver is running at Windows startup using
+<pre>
+  sc query iphlpsvc
+</pre>
+</li>
+<li>After Windows comes up and you have logged in, check the status of the 'LanmanServer' driver. Open
+    a command console (no privilege elevation is required) and type
+<pre>
+  sc query lanmanserver
+</pre>
+    The 'LanmanServer' driver should be in the state <b>Running</b>. 
+    If it is not, then follow
+    <a href="WinAddTask.html">these steps</a> to create a task using the Task Schedule
+    to start them at system startup.
+</li>
+</ul>
+
+This also shows the downside of the <code>portproxy</code> method: it is no longer possible
+to use local shares on the computer while this rule is active.
+
+<h2><a name="ConfigurePuTTY">Configuring PuTTY</a></h2>
+
+Set up a special PuTTY session with the appropriate <code>port-forwarding</code>:
+
+<ul>
+<li>Start PuTTY and create a new session or load your existing session for 
+    logging in on <code>login.nikhef.nl</code>. Choose host <b>login2.nikhef.nl</b>
+    and protocol <b>SSH</b>.
+</li>
+<li>Expand the <b>Connection->SSH</b> menu option in the <i>Category</i> tree-list 
+    and select <b>Tunnels</b>.
+</li>
+<li>Add a new forwarded port:<br>
+    <img src="../images/VistaPuTTYConfigLoopTunnels1.png" alt="puttyLoopTunnels1">
+    <br><ul>
+    <li>For the <b>Source port</b>, fill in the <i>IP address</i> of your 
+        loopback adapter, plus the port <b>44445</b> (<b>NOT</b> 445!).
+        The entry field might seem
+        to small for it, but it will work. If you have configured your
+        loopback adapter exactly as in the previous section, then fill in<br>
+        <b>10.255.255.1:44445</b>.
+    <li>For the <b>Destination</b>, fill in <b>beuk.nikhef.nl:445</b>.
+    </li>
+    <li>Click on <b>Add</b>.
+    </li>
+    </ul>
+<li>You should now see:<br>
+    <img src="../images/VistaPuTTYConfigLoopTunnels2.png" alt="puttyLoopTunnels2">
+</li>
+<li>In the <i>Category</i> tree-list on the left, scroll back up and choose
+    <b>Session</b> again. Save your session.
+</li>
+</ul>
+
+<h2><a name="MountHome">Putting it all together</a></h2>
+
+Now that we have configured both our loopback adapter and PuTTY we can put it
+all together and mount our Nikhef home directory as a Windows share:
+
+<ul>
+<li>Start your newly created Nikhef-PuTTY session and login on 
+    <code>login2.nikhef.nl</code> as normal.
+</li>
+<li>Make sure port-forwarding is working properly by checking the PuTTY
+    event log. Select the Window menu of the PuTTY screen (top left) and 
+    select <b>Event log</b>. You should see a log similar to:<Br>
+    <img src="../images/VistaPuTTYEventLog.png" alt="puttyEventLog">
+    <br>If not, then check your PuTTY session options first.
+</li>
+<li>Go to <b>Start->Run</b> and type <b>\\10.255.255.1\user\&lt;Your-nikhef-userid&gt;</b>
+</li>
+<li>You will be prompted to authenticate yourself:<br>
+    <img src="../images/VistaLoopLogin.png" alt="networkLogin">
+    <br>For the <i>Username</i>, fill in the domain <b>NIKHEF\</b> followed
+    by your Nikhef-Windows userid.
+    <br>For the <i>Password</i>, fill in your Nikhef-Windows password, which
+    might be different from the password you use to log in on 
+    <code>login2.nikhef.nl</code> and press <b>OK</b>.
+</li>
+<li>You should now see your Nikhef home directory in Windows Explorer!
+</li>
+</ul>
+
+<center><i>Congratulations!</i></center>
+
+<h4>Mapping a network drive</h4>
+
+To make life even easier it might be handy to map a network drive to your
+Nikhef home directory:
+
+<ul>
+<li>Start Windows Explorer and choose <b>Tools->Map Network Drive</b>.
+</li>
+<li>In the next screen, fill in:<br>
+    <img src="../images/Win7MapNetworkDrive.png" alt="Win7MapNetworkDrive" width="500">
+    <ul>
+    <li>Choose an available drive letter.
+    </li>
+    <li>Do <b>NOT</b> click on <i>Browse</i> but type in as the <i>Folder</i>
+        name:
+        <b>\\10.255.255.1\user\&lt;Your-nikhef-userid&gt;</b>
+    </li>
+    <li>Enable the checkbox in front of <b>Connect using different credentials</b>.
+    </li>
+    <li>Now click on <b>Finish</b>.
+    </li>
+    </ul>
+</li>
+<li>In the next screen, fill in your Nikhef-Windows userid:<br>
+    <img src="../images/Win7NetworkCreds" alt="Win7NetworkCreds" width="380">
+    <br>For the <i>User name</i>, fill in the domain <b>NIKHEF\</b> followed
+    by your Nikhef-Windows userid.
+    <br>For the <i>Password</i>, fill in your Nikhef-Windows password, which
+    might be different from the password you use to log in on 
+    <code>login.nikhef.nl</code> and press <b>OK</b>.
+</li>
+</li>
+<li>In the next screen, click on <b>Finish</b> to complete the network drive mapping.
+</li>
+<li>You should now see a new drive letter appear in the <i>Folders</i> tree-list
+    in Windows Explorer. Click on it to verify that you are indeed viewing your
+    Nikhef home directory.
+</li>
+</ul>
+
+<h2><a name="Undo">Control+Z! Undo! Undo!</a></h2>
+
+For those wishing to undo the CIFS-over-SSH trick follow these steps:
+
+<ol>
+<li>Start a console window with elevated (Administrator) privileges.
+</li>
+<li>Restore the automatic startup of the <code>smb</code> driver by typing
+<pre>
+  sc config lanmanserver start= auto
+</pre>
+<b>NOTE</b> the space after the <code>start= </code> !
+</li>
+<li>Remove the <code>portproxy</code> rule by typing
+<pre>
+  netsh interface portproxy delete v4tov4 listenaddress=10.255.255.1 listenport=445
+</pre>
+</li>
+<li>Start a <code>Device Manager</code> by typing
+<pre>
+  devmgmt.msc
+</pre>
+    Expand the 'Network Adapters', right-click on <b>Loopback adapter</b> and select 
+    <b>Uninstall</b>.
+</li>
+<li>If necessary, use the 'Task Scheduler' from the 'Administrative Tasks' menu to delete the
+    task 'Start LanmanServer driver'
+</li>
+</ol>
+
+</body>
+</html>
+

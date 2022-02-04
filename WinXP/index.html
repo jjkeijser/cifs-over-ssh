@@ -1,0 +1,287 @@
+<html>
+<title>
+CIFS-over-SSH with File Sharing
+</title>
+<body>
+<h1>Mounting your Nikhef home directory using SSH<br>
+when Windows File Sharing is <u>en</u>abled</h1>
+
+<h2>Introduction</h2>
+
+This tutorial contains screenshots for the English version of Windows 2000/XP.
+<br>
+Separate instructions for other versions of Windows are also available:
+<ul>
+<li><a href="../WinVista/index.html">Windows Vista</a>.
+</li>
+<li><a href="../Win7/index.html">Windows 7</a>.
+</li>
+<li><a href="../Win8/index.html">Windows 8</a>.
+</li>
+<li><a href="../Win10/index.html">Windows 10</a>.
+</li>
+</ul>
+
+To be able to mount a Windows share over SSH we will need 
+<ul>
+<li>Administrator access to the local computer.
+</li>
+<li><a href="http://www.chiark.greenend.org.uk/~sgtatham/putty/">PuTTY v0.58+</a>,
+    which is an excellent and free implementation of SSH for Windows.
+    It is assumed that you are familiar with the PuTTY user interface.
+</li>
+<li>One real or virtual network adapter with the following properties:
+    <ul>
+    <li>Bound to the <i>Client for Microsoft Networks</i>.
+    </li>
+    <li>with TCP/IP property <b>NetBIOS over TCP/IP <u>en</u>abled</b>.
+    </li>
+    </ul>
+    Normally you should already have such an adapter, as otherwise you
+    would not be able to mount any Windows shares.
+</li>
+<li>One real or virtual network adapter with the following properties:
+    <ul>
+    <li><b>NOT</b> bound to the <i>Client for Microsoft Networks</i>.
+    </li>
+    <li><b>NOT</b> bound to the <i>File and Printer Sharing 
+        for Microsoft Networks</i>.
+    </li>
+    <li>with TCP/IP property <b>NetBIOS over TCP/IP <u>dis</u>abled</b>.
+    </li>
+    </ul>
+    (Don't worry, step-by-step instructions on how to achieve this are below...)
+</li>
+</ul>
+
+This part of the tutorial is split into the following steps:
+<ol>
+<li>As most people do not have a spare real network adapter in their computer,
+    we will add an extra virtual network adapter by 
+    <a href="#Install">installing</a> the
+    <b>Microsoft&nbsp;Loopback&nbsp;Adapter</b>.
+</li>
+<li>After that, the network adapter must be properly 
+    <a href="#ConfigureAdapter">configured</a>.
+</li>
+<li>Then we set up a special
+    <a href="#ConfigurePuTTY">PuTTY</a> session with the right port-forwarding.
+</li>
+<li>Finally, we start PuTTY and <a href="#MountHome">mount</a> our Nikhef home
+    directory.
+</li>
+</ol>
+
+<h2><a name="Install">Installing the Loopback Adapter</a></h2>
+
+To install the Loopback adapter follow these steps:
+<ul>
+<li>Go to <b>Start->Settings->Control Panel->Add Hardware</b>. The Hardware Wizard
+    will come up:<br>
+    <img src="../images/AddHWwiz1.png" alt="wizardStart">
+</li>
+<li>Click <b>Next</b>, after which the Hardware Wizard will attempt to find new
+    devices. After a while, this screen will come up:<br>
+    <img src="../images/AddHWwiz2_isConnected.png" alt="isConnected">
+</li>
+<li>Select <b>Yes</b>, then click <b>Next</b>, after which you'll see 
+    a new screen:<br>
+    <img src="../images/AddHWwiz3_addNewHW.png" alt="addNewHW">
+    <br>Scroll down in the list of Installed Hardware to the entry 
+    <b>Add&nbsp;a&nbsp;new&nbsp;hardware&nbsp;device</b> and select it, then
+    click <b>Next</b>.
+</li>
+<li>A new screen will come up:<br>
+    <img src="../images/AddHWwiz4_manualSelect.png" alt="manualSelect">
+    <br>Select <b>Install the hardware that I manually select from a list</b>
+    and click <b>Next</b>.
+</li>
+<li>Now you'll see:<br>
+    <img src="../images/AddHWwiz5_NetworkAdapters.png" alt="networkAdapters">
+    <br>Scroll down in the list to the entry <b>Network&nbsp;adapters</b>,
+    select it and then click <b>Next</b>.
+</li>
+<li>In the next screen<br>
+    <img src="../images/AddHWwiz6_MSLoopback.png" alt="msLoopback">
+    <br>first select <b>Microsoft</b> from the list of <i>Manufacturers</i>
+    and then select <b>Microsoft&nbsp;Loopback&nbsp;Adapter</b> from the
+    list of <i>Network Adapters</i>. Finally, click <b>Next</b> once more.
+</li>
+<li>Almost finished:<br>
+    <img src="../images/AddHWwiz7_ReadyToInstall.png" alt="readyToInstall">
+    <br>This is your last chance to abort, otherwise, click <b>Next</b>.
+</li>
+<li>After a while you should see:<br>
+    <img src="../images/AddHWwiz8_Finished.png" alt="finished">
+    <br>Click <b>Finish</b> to exit the Hardware Wizard.
+</li>
+</ul>
+
+You are now ready to configure your newly installed Loopback adapter. Even though
+Windows might not ask you to, reboot anyways (heey, it's a Microsoft OS ;-)).<br>
+From reports I've seen on the Internet a reboot is sometimes required for the 
+loopback adapter to come up properly.
+<br>
+
+<h2><a name="ConfigureAdapter">Configuring the Loopback Adapter</a></h2>
+
+Now that your newly installed loopback adapter is up and running we must configure
+it properly:
+
+<ul>
+<li>Right-click on the 'Network Neighborhood' or 'My Network Places' icon on your
+    desktop.<br>
+    <img src="../images/NetworkPlaces.png" alt="NetworkPlaces"><br>
+</li>
+<li>Select <b>Properties</b>, after which a new window will appear.
+</li>
+<li>Choose the loopback adapter (check the column <i>Device name</i> to select
+    the appropriate adapter) and right-click on it.
+</li>
+<li>Again, choose <b>Properties</b>, after which a new window will appear<br>
+    <img src="../images/loopPropertiesGeneral.png" alt="loopProperties">
+    <br>Make sure that
+    <ul>
+    <li>the entry <b>Client for Microsoft Networks</b>
+        is <b>NOT</b> enabled, i.e. does not have a checkmark in front of it.
+    </li>
+    <li>the entry <b>File and Printer sharing for Microsoft Networks</b>
+        is <b>NOT</b> enabled, i.e. does not have a checkmark in front of it.
+    </li>
+    <li>the entry <b>Internet Protocol (TCP/IP)</b> <u>is</u> enabled.
+    </li>
+    </ul>
+</li>
+<li>Select the entry <b>Internet Protocol (TCP/IP)</b>, then click on
+    <b>Properties</b>.
+</li>
+<li>A new window will appear:<br>
+    <img src="../images/loopPropertiesTCPIP.png" alt="loopPropertiesTCPIP">
+    <br>Select <b>Use the following IP address</b> and fill in the 'IP address'
+    and 'Subnet mask' as above.
+    <br>It is not necessary to fill in the 'Default gateway' or a 'DNS server'.
+</li>
+<li>Click on <b>Advanced</b> to make the following window appear:<br>
+    <img src="../images/loopPropertiesTCPIPAdv.png" alt="loopPropertiesTCPIPAdv">
+    <br>Deselect <b>Automatic metric</b> and fill in the value of <b>9999</b>
+    as the 'Interface metric' as shown above.
+</li>
+<li>Click on the <b>WINS</b> tab:<br>
+    <img src="../images/loopPropertiesWINS.png" alt="loopPropertiesWINS">
+    <br>and select <b>Disable NetBIOS over TCP/IP</b>.
+</li>
+<li>Click on <b>OK</b>.
+</li>
+<li>You are now back in the main 'TCP/IP Properties' screen. Click <b>OK</b> again.
+</li>
+<li>You are now back in the main 'Loopback Properties' screen. Click <b>Close</b>.
+</li>
+</ul>
+
+<h2><a name="ConfigurePuTTY">Configuring PuTTY</a></h2>
+
+Set up a special PuTTY session with the appropriate <code>port-forwarding</code>:
+
+<ul>
+<li>Start PuTTY and create a new session or load your existing session for 
+    logging in on <code>login.nikhef.nl</code>. Choose host <b>login.nikhef.nl</b>
+    and protocol <b>SSH</b>.
+</li>
+<li>Expand the <b>Connection->SSH</b> menu option in the <i>Category</i> tree-list 
+    and select <b>Tunnels</b>.
+</li>
+<li>Add a new forwarded port:<br>
+    <img src="../images/PuTTYConfigLoopTunnels1.png" alt="puttyLoopTunnels1">
+    <br><ul>
+    <li>For the <b>Source port</b>, fill in the <i>IP address</i> of your 
+        loopback adapter, plus the port <b>139</b>. The entry field might seem
+        to small for it, but it will work. If you have configured your
+        loopback adapter exactly as in the previous section, then fill in<br>
+        <b>10.255.255.1:139</b>.
+    <li>For the <b>Destination</b>, fill in <b>beuk.nikhef.nl:139</b>.
+    </li>
+    <li>Click on <b>Add</b>.
+    </li>
+    </ul>
+<li>You should now see:<br>
+    <img src="../images/PuTTYConfigLoopTunnels2.png" alt="puttyLoopTunnels2">
+</li>
+<li>In the <i>Category</i> tree-list on the left, scroll back up and choose
+    <b>Session</b> again. Save your session.
+</li>
+</ul>
+
+<h2><a name="MountHome">Putting it all together</a></h2>
+
+Now that we have configured both our loopback adapter and PuTTY we can put it
+all together and mount our Nikhef home directory as a Windows share:
+
+<ul>
+<li>Start your newly created Nikhef-PuTTY session and login on 
+    <code>login.nikhef.nl</code> as normal.
+</li>
+<li>Make sure port-forwarding is working properly by checking the PuTTY
+    event log. Select the Window menu of the PuTTY screen (top left) and 
+    select <b>Event log</b>. You should see a log similar to:<Br>
+    <img src="../images/PuTTYLoopEventLog.png" alt="puttyLoopEventLog">
+    <br>If not, then check your PuTTY session options first.
+</li>
+<li>Go to <b>Start->Run</b> and type
+    <b>\\10.255.255.1\user\&lt;Your-nikhef-userid&gt;</b>
+</li>
+<li>You will be prompted to authenticate yourself:<br>
+    <img src="../images/LoopNetworkLogin.png" alt="networkLogin">
+    <br>For the <i>Username</i>, fill in the domain <b>NIKHEF\</b> followed
+    by your Nikhef-Windows userid.
+    <br>For the <i>Password</i>, fill in your Nikhef-Windows password, which
+    might be different from the password you use to log in on 
+    <code>login.nikhef.nl</code> and press <b>OK</b>.
+</li>
+<li>You should now see your Nikhef home directory in Windows Explorer!
+</li>
+</ul>
+
+<center><i>Congratulations!</i></center>
+
+<h4>Mapping a network drive</h4>
+
+To make life even easier it might be handy to map a network drive to your
+Nikhef home directory:
+
+<ul>
+<li>Start Windows Explorer and choose <b>Tools->Map Network Drive</b>.
+</li>
+<li>In the next screen, fill in:<br>
+    <img src="../images/LoopMapNetworkDrive.png" alt=loopMapNetworkDrive">
+    <ul>
+    <li>Choose an available drive letter.
+    </li>
+    <li>Do <b>NOT</b> click on <i>Browse</i> but type in as the <i>Folder</i>
+        name:
+        <b>\\10.255.255.1\user\&lt;Your-nikhef-userid&gt;</b>
+    </li>
+    <li>Do <b>NOT</b> click on <i>Finish</i>, click on 
+        <b>Different user name</b>.
+    </li>
+    </ul>
+</li>
+<li>In the next screen, fill in your Nikhef-Windows userid:<br>
+    <img src="../images/ConnectAs.png" alt="connectAs">
+    <br>For the <i>User name</i>, fill in the domain <b>NIKHEF\</b> followed
+    by your Nikhef-Windows userid.
+    <br>For the <i>Password</i>, fill in your Nikhef-Windows password, which
+    might be different from the password you use to log in on 
+    <code>login.nikhef.nl</code> and press <b>OK</b>.
+</li>
+</li>
+<li>Click on <b>Finish</b> to complete the network drive mapping.
+</li>
+<li>You should now see a new drive letter appear in the <i>Folders</i> tree-list
+    in Windows Explorer. Click on it to verify that you are indeed viewing your
+    Nikhef home directory.
+</li>
+</ul>
+
+</body>
+</html>
+
