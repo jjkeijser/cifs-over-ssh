@@ -1,0 +1,81 @@
+<html>
+<title>
+CIFS-over-SSH for Windows 10: Tweaking the 'LanmanServer' driver (old)
+</title>
+<body>
+
+<body>
+<h1>CIFS-over-SSH for Windows 10: Tweaking the 'LanmanServer' driver (old)
+</h1>
+
+<h2>Introduction</h2>
+
+This page is part of the CIFS-over-SSH tutorial for Windows 10. You are reading this
+most likely because the method to start the <code>iphlpsvc</code> service using a
+system dependency did not work for you. 
+<br><br>
+Here you will find the old set of instructions, which might work better.
+
+
+<h2><a name="ConfigureDrivers">Tweaking the 'LanmanServer' driver (old)</a></h2>
+
+Now we first need to tweak a Windows system driver to overcome the thing that 
+Microsoft broke. The root cause of the problem is that we need to access the 
+file share using TCP port <b>445</b>. However, when Windows 10 boots 
+this port is grabbed by the system <code>lanmanserver</code> driver for all interfaces.
+By delaying the startup of the <code>lanmanserver</code> driver and by installing a
+<code>portproxy</code> rule we can circumvent this. This section explains how 
+to do this:
+
+<ul>
+<li>Start a console window with elevated (Administrator) privileges.
+</li>
+
+<li>First, we disable the automatic starting of the <code>lanmanserver</code> driver:<br>
+<pre>
+  sc config lanmanserver start= delayed-auto
+</pre>
+<b>NOTE</b> the space after the <code>start= </code> ! Also, if <code>start= delayed-auto</code> does not 
+work then try <code>start= demand</code>
+</li>
+<li>Make sure the <code>IpHlpSvc</code> driver is running at startup, as otherwise 
+the portproxy rules are not executed:<br>
+<pre>
+  sc config iphlpsvc start= auto
+</pre>
+<b>NOTE</b> the space after the <code>start= </code> !
+<br>
+Thanks to Michael Uhlenberg for pointing out this important driver.
+</li>
+<li>Next we add a <code>portproxy</code> rule to reroute TCP port 445 to a port of
+    our choosing. For this tutorial, I choose <b>44445</b>:
+<pre>
+  netsh interface portproxy add v4tov4 listenaddress=10.255.255.1 listenport=445
+        connectaddress=10.255.255.1 connectport=44445
+</pre>
+  <b>IMPORTANT NOTES</b>:
+  <ul>
+    <li>The <code>listenaddress</code> is the address of the Loopback adapter 
+        configured in the section earlier
+   </li>
+    <li>The <code>connectaddress</code>  must be identical to the <code>listenaddress</code>
+   </li>
+    <li>Using <code>listenaddress=127.0.0.1</code> does not work. Believe me, I've tried.
+   </li>
+  </ul>
+</li>
+</ul>
+
+If all went well you should see something like<br>
+<img src="../images/Win10portproxy.png" alt="ConfigureConsole" width="700">
+<br>
+The <code>portproxy</code> rule is persistent, so there should be no need to repeat
+this step after a reboot.
+
+<br><br>
+You can now continue with the rest of the tutorial, starting at the 
+<a href="Win10Loopback.html#Verify">Verify</a> section.
+
+</body>
+</html>
+

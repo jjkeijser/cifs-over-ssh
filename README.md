@@ -1,4 +1,4 @@
-## Cifs-over-SSH 
+## CIFS-over-SSH 
 
 Sometimes there is a need to mount a remote Windows/Samba directory, but all you have is
 an SSH connection to a remote server close to the fileserver. 
@@ -22,8 +22,8 @@ The concept behind mounting shares using SSH is this:
 
 This tutorial has been tested on Windows 2000, XP, Vista, 7, 8 and 10:
 
-- Windows 10 for those who are using Windows 10 with the built-in OpenSSH client.
-- Windows 10 using PuTTY for those who are using Windows 10 in combination with the PuTTY SSH client.
+- [Windows 10 with the built-in OpenSSH client](Win10/Win10Loopback.html)
+- [Windows 10 with the PuTTY SSH client](Win10/Win10PuTTYLoopback.html)
 
 **Note** This tutorial does not work on Windows Server 2016 or 2019. If someone finds a way to make
   it work for Windows Server editions please let me know!
@@ -33,5 +33,5 @@ For Windows 2000/XP/Vista/7/8 the following legacy tutorial pages are available:
 - [Windows 8](Win8/)
 - [Windows 7](Win7/)
 - [Windows Vista](WinVista/)
-- [Windows XP](WinXP/)
+- [Windows XP/2000](WinXP/)
 

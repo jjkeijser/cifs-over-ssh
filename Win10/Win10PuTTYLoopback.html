@@ -1,26 +1,27 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <title>
-CIFS-over-SSH for Windows 8
+CIFS-over-SSH for Windows 10
 </title>
 <body>
 <h1>Mounting your Nikhef home directory using SSH<br>
-for Windows 8</h1>
-<small><em>(Updated 27/Sep/2019)</em></small>
+for Windows 10 (PuTTY client)</h1>
+<small><em>(tested Win10 1809,1909,20H2,21H1,21H2)</em></small>
 
 <h2>Introduction</h2>
 
-This tutorial contains screenshots for the English version of Windows 8.
-Separate instructions for other versions of Windows are also available:
+This tutorial contains screenshots for the English version of Windows 10.
+Separate instructions for older versions of Windows are also available:
 <ul>
-<li><a href="../WinVista/index.html">Windows Vista</a>.
+<li><a href="../Win8/index.html">Windows 8</a>.
 </li>   
 <li><a href="../Win7/index.html">Windows 7</a>.
 </li>
-<li><a href="../Win10/index.html">Windows 10</a>.
+<li><a href="../WinVista/index.html">Windows Vista</a>.
+</li>
+<li><a href="../WinXP/index.html">Windows 2000/XP</a>.
 </li>
 </ul>   
-The instructions for Windows 2000/XP are also still <a href="../WinXP/index.html">available</a>.
-<br>
 
 To be able to mount a Windows share over SSH we will need 
 <ul>
@@ -43,8 +44,6 @@ To be able to mount a Windows share over SSH we will need
 </li>
 </ul>
 
-<br><br>
-
 This part of the tutorial is split into the following steps:
 <ol>
 <li>As most people do not have a spare real network adapter in their computer,
@@ -55,15 +54,14 @@ This part of the tutorial is split into the following steps:
 <li>After that, the network adapter must be properly 
     <a href="#ConfigureAdapter">configured</a>.
 </li>
-<li>Furthermore, a few Windows system drivers need to be
-    <a href="#ConfigureDrivers">tweaked</a>.
+<li>Starting with Windows 10 update 1903, the Windows 10 feature "SMB 1.0" must be 
+    <a href="#DisableSMB1.0">turned off</a>.
+</li>
+<li>Furthermore, a few Windows system services need to be
+    <a href="#ConfigureServices">tweaked</a>.
 </li>
 <li>Next, reboot Windows to <a href="#Verify">verify</a> that we've been able to 
-    grab port 445 and to see if the <code>smb</code> and <code>lanmanserver</code>
-    drivers are up and running.
-</li>
-<li>If the port was grabbed, but the drivers are not running, then create a task 
-    using the <a href="../WinAddTask.html">Windows Task Scheduler</a> to start the drivers.
+    grab port 445 and to see if the <code>lanmanserver</code> service is up and running.
 </li>
 <li>Next, we set up a special
     <a href="#ConfigurePuTTY">PuTTY</a> session with the right port-forwarding.
@@ -77,7 +75,24 @@ This part of the tutorial is split into the following steps:
 </li>
 </ol>
 
-<h2><a name="Install">Installing the Loopback Adapter</a></h2>
+<h4>Windows 10 Upgrade woes</h4>
+
+Multiple persons have reported problems after a major Windows 10 upgrade (e.g. from 1803 to 1809).
+This is due mostly to the disappearance of the <b>Microsoft&nbsp;KM-TEST&nbsp;Loopback&nbsp;Adapter</b>
+and of the <b>portproxy</b> rule.  In order to recover after a Windows 10 upgrade, try 
+<ul>
+<li>Redo step 1 and reboot
+</li>
+<li>If the adapter is still not present, run <b>devmgmt.msc</b> management console application and<br>
+choose <b>View->Show Hidden devices</b> to see you can find the adapter again. If not, redo step 2.
+</li>
+<li>Redo steps 3, 4 and 5.
+</li>
+</ul>
+
+<br>
+
+<h2><a name="Install">1. Installing the Loopback Adapter</a></h2>
 
 To install the Loopback adapter follow these steps:
 <ul>
@@ -89,28 +104,28 @@ To install the Loopback adapter follow these steps:
   hdwwiz.exe
 </pre>
     The Hardware Wizard will come up:<br>
-    <img src="../images/VistaAddHWwiz1.png" alt="wizardStart">
+    <img src="../images/Win10AddHWwiz1.png" alt="wizardStart" width="500">
 <li>Click <b>Next</b> to continue:<br>
-    <img src="../images/VistaAddHWwiz2.png" alt="manualSelect">
+    <img src="../images/Win10AddHWwiz2.png" alt="manualSelect" width="500">
     <br>Select <b>Install the hardware that I manually select from a list</b>
     and click <b>Next</b>.
 </li>
 <li>Now you'll see:<br>
-    <img src="../images/VistaAddHWwiz3.png" alt="networkAdapters">
+    <img src="../images/Win10AddHWwiz3.png" alt="networkAdapters" width="500">
     <br>Select the entry <b>Network&nbsp;adapters</b> and click <b>Next</b>.
 </li>
 <li>In the next screen<br>
-    <img src="../images/Win8AddHWwiz4.png" alt="msLoopback">
+    <img src="../images/Win10AddHWwiz4.png" alt="msLoopback" width="500">
     <br>first select <b>Microsoft</b> from the list of <i>Manufacturers</i>
     and then select <b>Microsoft&nbsp;KM-TEST&nbsp;Loopback&nbsp;Adapter</b> from the
     list of <i>Network Adapters</i>. Finally, click <b>Next</b> once more.
 </li>
 <li>Almost finished:<br>
-    <img src="../images/VistaAddHWwiz5.png" alt="readyToInstall">
+    <img src="../images/Win10AddHWwiz5.png" alt="readyToInstall" width="500">
     <br>This is your last chance to abort, otherwise, click <b>Next</b>.
 </li>
 <li>After a while you should see:<br>
-    <img src="../images/VistaAddHWwiz6.png" alt="finished">
+    <img src="../images/Win10AddHWwiz6.png" alt="finished" width="500">
     <br>Click <b>Finish</b> to exit the Hardware Wizard.
 </li>
 </ul>
@@ -121,20 +136,21 @@ From reports I've seen on the Internet a reboot is sometimes required for the
 loopback adapter to come up properly.
 <br>
 
-<h2><a name="ConfigureAdapter">Configuring the Loopback Adapter</a></h2>
+<h2><a name="ConfigureAdapter">2. Configuring the Loopback Adapter</a></h2>
 
 Now that your newly installed loopback adapter is up and running we must configure
 it properly:
 
 <ul>
 <li>Go to the <b>Network Connections Center</b>:<br>
-    <img src="../images/VistaNetworkConns.png" alt="NetworkConnections"><br>
+    <img src="../images/Win10NetworkConns.png" alt="NetworkConnections" width="600">
 </li>
-<li>Choose the loopback adapter (usually it is named "Local Area Connection #3")
-    and right-click on it.
+<li>Choose the loopback adapter (usually it is named something like "Local Area Connection #3")
+    and right-click on it:<br>
+    <img src="../images/Win10ChooseAdapter.png" alt="ChooseAdapter" width="600">
 </li>
 <li>Choose <b>Properties</b>, after which a new window will appear<br>
-    <img src="../images/VistaLoopPropertiesGeneral.png" alt="loopProperties">
+    <img src="../images/Win10LoopPropertiesGeneral.png" alt="loopProperties" width="400">
     <br>Make sure that
     <ul>
     <li>the entry <b>Client for Microsoft Networks</b>
@@ -151,18 +167,18 @@ it properly:
     <b>Properties</b>.
 </li>
 <li>A new window will appear:<br>
-    <img src="../images/VistaLoopPropertiesTCPIP.png" alt="loopPropertiesTCPIP">
+    <img src="../images/Win10LoopPropertiesTCPIP.png" alt="loopPropertiesTCPIP" width="400">
     <br>Select <b>Use the following IP address</b> and fill in the 'IP address'
     and 'Subnet mask' as above.
     <br>It is not necessary to fill in the 'Default gateway' or a 'DNS server'.
 </li>
 <li>Click on <b>Advanced</b> to make the following window appear:<br>
-    <img src="../images/VistaLoopPropertiesTCPIPAdv.png" alt="loopPropertiesTCPIPAdv">
+    <img src="../images/Win10LoopPropertiesTCPIPAdv.png" alt="loopPropertiesTCPIPAdv" width="400">
     <br>Deselect <b>Automatic metric</b> and fill in the value of <b>9999</b>
     as the 'Interface metric' as shown above.
 </li>
 <li>Click on the <b>WINS</b> tab:<br>
-    <img src="../images/VistaLoopPropertiesWINS.png" alt="loopPropertiesWINS">
+    <img src="../images/Win10LoopPropertiesWINS.png" alt="loopPropertiesWINS" width="400">
     <br>and select <b>Disable NetBIOS over TCP/IP</b>.
 </li>
 <li>Click on <b>OK</b>.
@@ -173,103 +189,163 @@ it properly:
 </li>
 </ul>
 
+<h2><a name="DisableSMB1.0">3. Disabling the 'SMB 1.0' Windows feature</a></h2>
 
-<h2><a name="ConfigureDrivers">Tweaking a few Windows drivers</a></h2>
+Starting with Windows 10 update 1903 we need to disable the Windows feature <code>SMB 1.0</code>:
 
-Now we first need to tweak a Windows system driver to overcome the thing that 
-Microsoft broke. The root cause of the problem is that we need to access the
-file share using TCP port <b>445</b>. However, when Windows 8 boots 
-this port is grabbed by the system <code>lanmanserver</code> driver for all interfaces.
-By delaying the startup of the <code>lanmanserver</code> driver and by installing a
-<code>portproxy</code> rule we can circumvent this. This section explains how 
-to do this:
+<ul>
+<li>Go to the <b>Control Panel->Programs->Programs and Features</b> and select
+   <b>Turn Windows features on or off</b>
+<li>A list of features pops up:<br>
+    <img src="../images/Win10-disable-smb-cifs1.0.png" alt="FeatureSMB 1.0" width="600">
+    <br>Scroll down and deselect the feature <b>SMB 1.0/CIFS File Sharing support</b>
+</li>
+<li>Now close this control panel item. 
+</ul>
+
+<i>(Thanks to Michael Uhlenberg for pointing this out)</i>
+
+<h2><a name="ConfigureServices">4. Tweaking the 'LanmanServer' service</a></h2>
+
+First, we need to tweak a Windows system service to overcome the thing that 
+Microsoft broke. The root cause of the problem is that we need to access the 
+file share using TCP port <b>445</b>. However, when Windows boots, this port is  
+grabbed by the system <code>lanmanserver</code> service for all interfaces.
+
+If we can insert a <code>portproxy</code> rule to grab port 445 for the loopback
+interface <b>before</b> the <code>lanmanserver</code> service starts, we can circumvent this.
+Be aware that <code>portproxy</code> rules are executed by the <code>iphlpsvc</code> service.
+
+By adding a dependency to the <code>lanmanserver</code> service we ensure that the 
+<code>iphlpsvc</code> service is <b>always</b> launched before the <code>lanmanserver</code>
+service. This section explains how to do this:
 
 <ul>
 <li>Start a console window with elevated (Administrator) privileges.
 </li>
 
-<li>First, we disable the automatic starting of the <code>lanmanserver</code> driver:<br>
+<li>Get the list of service dependencies by typing:
 <pre>
-  sc config lanmanserver start= demand
+  sc qc lanmanserver
 </pre>
-<b>NOTE</b> the space after the <code>start= </code> !
+You should see output similar to this:
+<pre>
+[SC] QueryServiceConfig SUCCESS
+
+SERVICE_NAME: lanmanserver
+        TYPE               : 20  WIN32_SHARE_PROCESS 
+        START_TYPE         : 2   AUTO_START
+        ERROR_CONTROL      : 1   NORMAL
+        BINARY_PATH_NAME   : C:\WINDOWS\system32\svchost.exe -k netsvcs -p
+        LOAD_ORDER_GROUP   : 
+        TAG                : 0
+        DISPLAY_NAME       : Server
+        DEPENDENCIES       : SamSS
+                           : Srv2
+        SERVICE_START_NAME : LocalSystem
+</pre>
+
+ Alternatively, you can use the <code>Powershell</code> command
+<pre>
+  Get-Service -DisplayName server -RequiredServices
+</pre>
 </li>
 
-<li>Make sure the <code>IpHlpSvc</code> driver is running at startup, as otherwise 
-the portproxy rules are not executed:<br>
-<pre>
-  sc config iphlpsvc start= auto
-</pre>
-<b>NOTE</b> the space after the <code>start= </code> !
-<br>
-Thanks to Michael Uhlenberg for pointing out this important driver.
+<li>Note down the names of the services on which the <code>Server</code> service
+(also known as <code>lanmanserver</code>) depends. In this case, these services
+are <code>samss</code> and <code>srv2</code> (the service names are case independent).
 </li>
+
+<li>Change the list of services on which the <code>lanmanserver</code> services depends
+by adding the <code>iphlpsvc</code> service to the list of required services found in the
+previous step:
+<pre>
+  sc config lanmanserver depend= samss/srv2/iphlpsvc
+</pre>
+<b>NOTES:</b>
+  <ul>
+    <li>The space after the <code>"depend= "</code> is required!
+    </li>
+    <li>Dependencies are separated using slashes ("/").
+    </lI>
+  </ul>
+</li>
+
 <li>Next we add a <code>portproxy</code> rule to reroute TCP port 445 to a port of
     our choosing. For this tutorial, I choose <b>44445</b>:
 <pre>
   netsh interface portproxy add v4tov4 listenaddress=10.255.255.1 listenport=445
         connectaddress=10.255.255.1 connectport=44445
 </pre>
-  <b>IMPORTANT NOTES</b>:
+  <b>NOTES</b>:
   <ul>
     <li>The <code>listenaddress</code> is the address of the Loopback adapter 
         configured in the section earlier
    </li>
-    <li>The <code>connectaddress</code>  must be identical to the <code>listenaddress</code>
+   <li>The <code>connectaddress</code>  must be identical to the <code>listenaddress</code>
    </li>
-    <li>Using <code>listenaddress=127.0.0.1</code> does not work. Believe me, I've tried.
+   <li>Using <code>listenaddress=127.0.0.1</code> does not work. Believe me, I've tried.
    </li>
   </ul>
 </li>
 </ul>
 
 If all went well you should see something like<br>
-<img src="../images/VistaConsole.png" alt="ConfigureConsole">
+<img src="../images/Win10portproxy.png" alt="ConfigureConsole" width="700">
 <br>
 The <code>portproxy</code> rule is persistent, so there should be no need to repeat
 this step after a reboot.
 
-<h2><a name="Verify">Reboot and verify</a></h2>
+<h2><a name="Verify">5. Reboot and verify</a></h2>
 
-Of course, now that we have disabled the automatic startup of the 'LanmanServer' driver we have to
-reboot Windows before proceeding.
+Of course, now that we have made modifications to the 'Required Services' dependency of the
+'LanmanServer' service we have to reboot Windows before proceeding.
 
 <ul>
+<li>Reboot Windows
+</li>
 <li>Verify that the <code>portproxy</code> was applied successfully by checking the open ports 
-    on the system. Type in the command console
+    on the system. Type in a command console
 <pre>
   netstat -an | find ":445 "
 </pre>
-    You should see something like
-<pre>
-  TCP    10.255.255.1:445    0.0.0.0:0       LISTENING
-</pre>
-    If you see '<code>0.0.0.0:445</code>' instead then the 'portproxy' rule was not applied
-    correctly.  Verify that the right 'portproxy' rule was used
+    You should see something like:<br>
+    <img src="../images/Win10netstat.png" alt="Netstat" width="480">
+    <br>If you see <b>only</b> '<code>0.0.0.0:445</code>' instead then the 'portproxy' rule was 
+    not applied correctly.  Verify that the right 'portproxy' rule was used
 <pre>
    netsh interface portproxy show v4tov4
 </pre>
-   and verify that the <code>IpHlpSvc</code> driver is running at Windows startup using
+   and verify that the <code>IpHlpSvc</code> service is running at Windows startup using
 <pre>
   sc query iphlpsvc
 </pre>
+  Another reason for the 'port grabbing' to fail could be the <code>LanmanWorkstation</code> service 
+  running at Windows startup. If so, try giving it the same treatment as <code>LanmanServer</code>.
+  However, on the Windows 10 installations I tested this service was running at system startup 
+  without causing any problems.
 </li>
-<li>After Windows comes up and you have logged in, check the status of the 'LanmanServer' driver. Open
+<li>After Windows comes up and you have logged in, check the status of the 'lanmanserver' service. Open
     a command console (no privilege elevation is required) and type
 <pre>
   sc query lanmanserver
 </pre>
-    The 'LanmanServer' driver should be in the state <b>Running</b>. 
+    The 'LanmanServer' service should be in the state <b>Running</b>. 
     If it is not, then follow
-    <a href="../WinAddTask.html">these steps</a> to create a task using the Task Schedule
-    to start them at system startup.
+    <a href="WinAddTask.html">these steps</a> to create a task using the Task Schedule
+    to start it at system startup.
 </li>
 </ul>
 
-This also shows the downside of the <code>portproxy</code> method: it is no longer possible
-to use local shares on the computer while this rule is active.
 
-<h2><a name="ConfigurePuTTY">Configuring PuTTY</a></h2>
+If the port is not grabbed correctly (i.e. no <code>10.255.255.1:445</code> in the 'netstat` output)
+then try the <a href="Win10ConfigureServices.html">Old driver tweak</a> instructions to see if that
+works better for you.
+<br><br>
+On Windows 10 things are slightly different compared to Windows 7 and 8; it seems that Microsoft has
+read my tutorial and decided to provide a way to use local shares again ;-) !
+
+<h2><a name="ConfigurePuTTY">6. Configuring PuTTY</a></h2>
 
 Set up a special PuTTY session with the appropriate <code>port-forwarding</code>:
 
@@ -282,7 +358,7 @@ Set up a special PuTTY session with the appropriate <code>port-forwarding</code>
     and select <b>Tunnels</b>.
 </li>
 <li>Add a new forwarded port:<br>
-    <img src="../images/VistaPuTTYConfigLoopTunnels1.png" alt="puttyLoopTunnels1">
+    <img src="../images/Win10PuTTYConfigLoopTunnels1.png" alt="puttyLoopTunnels1" width="500">
     <br><ul>
     <li>For the <b>Source port</b>, fill in the <i>IP address</i> of your 
         loopback adapter, plus the port <b>44445</b> (<b>NOT</b> 445!).
@@ -296,14 +372,14 @@ Set up a special PuTTY session with the appropriate <code>port-forwarding</code>
     </li>
     </ul>
 <li>You should now see:<br>
-    <img src="../images/VistaPuTTYConfigLoopTunnels2.png" alt="puttyLoopTunnels2">
+    <img src="../images/Win10PuTTYConfigLoopTunnels2.png" alt="puttyLoopTunnels2" width="500">
 </li>
 <li>In the <i>Category</i> tree-list on the left, scroll back up and choose
     <b>Session</b> again. Save your session.
 </li>
 </ul>
 
-<h2><a name="MountHome">Putting it all together</a></h2>
+<h2><a name="MountHome">7. Putting it all together</a></h2>
 
 Now that we have configured both our loopback adapter and PuTTY we can put it
 all together and mount our Nikhef home directory as a Windows share:
@@ -312,16 +388,24 @@ all together and mount our Nikhef home directory as a Windows share:
 <li>Start your newly created Nikhef-PuTTY session and login on 
     <code>login2.nikhef.nl</code> as normal.
 </li>
+<li>The first time you start your new Nikhef-PuTTY session with the special
+    port forwarding rules, you will be (probably) be prompted by the Windows
+    Defender Firewall that it has blocked some features:<br>
+    <img src="../images/Win10PuTTYFirewall.png" alt="puttyFirewall" width="600">
+    <br>Allow access to at least <b>Public</b> networks by ticking the checkbox,
+        then click on <b>Allow access</b> as otherwise the port-forwarding will
+        not work.
+</li>
 <li>Make sure port-forwarding is working properly by checking the PuTTY
     event log. Select the Window menu of the PuTTY screen (top left) and 
     select <b>Event log</b>. You should see a log similar to:<Br>
-    <img src="../images/VistaPuTTYEventLog.png" alt="puttyEventLog">
+    <img src="../images/Win10PuTTYEventLog.png" alt="puttyEventLog" width="500">
     <br>If not, then check your PuTTY session options first.
 </li>
 <li>Go to <b>Start->Run</b> and type <b>\\10.255.255.1\user\&lt;Your-nikhef-userid&gt;</b>
 </li>
 <li>You will be prompted to authenticate yourself:<br>
-    <img src="../images/VistaLoopLogin.png" alt="networkLogin">
+    <img src="../images/Win10NetworkCreds.png" alt="networkLogin" width="500">
     <br>For the <i>Username</i>, fill in the domain <b>NIKHEF\</b> followed
     by your Nikhef-Windows userid.
     <br>For the <i>Password</i>, fill in your Nikhef-Windows password, which
@@ -343,7 +427,7 @@ Nikhef home directory:
 <li>Start Windows Explorer and choose <b>Tools->Map Network Drive</b>.
 </li>
 <li>In the next screen, fill in:<br>
-    <img src="../images/Win7MapNetworkDrive.png" alt="Win7MapNetworkDrive" width="500">
+    <img src="../images/Win10MapNetworkDrive.png" alt="mapNetworkDrive" width="500">
     <ul>
     <li>Choose an available drive letter.
     </li>
@@ -358,13 +442,12 @@ Nikhef home directory:
     </ul>
 </li>
 <li>In the next screen, fill in your Nikhef-Windows userid:<br>
-    <img src="../images/Win7NetworkCreds" alt="Win7NetworkCreds" width="380">
+    <img src="../images/Win10NetworkCreds.png" alt="networkLogin" width="380">
     <br>For the <i>User name</i>, fill in the domain <b>NIKHEF\</b> followed
     by your Nikhef-Windows userid.
     <br>For the <i>Password</i>, fill in your Nikhef-Windows password, which
     might be different from the password you use to log in on 
     <code>login.nikhef.nl</code> and press <b>OK</b>.
-</li>
 </li>
 <li>In the next screen, click on <b>Finish</b> to complete the network drive mapping.
 </li>
@@ -374,23 +457,38 @@ Nikhef home directory:
 </li>
 </ul>
 
-<h2><a name="Undo">Control+Z! Undo! Undo!</a></h2>
+<h2><a name="Undo">8. Control+Z! Undo! Undo!</a></h2>
 
 For those wishing to undo the CIFS-over-SSH trick follow these steps:
 
 <ol>
 <li>Start a console window with elevated (Administrator) privileges.
 </li>
-<li>Restore the automatic startup of the <code>smb</code> driver by typing
+<li>Restore the dependencies of the <code>lanmanserver</code> service by typing
 <pre>
-  sc config lanmanserver start= auto
+  sc config lanmanserver depend= samss/srv2
 </pre>
-<b>NOTE</b> the space after the <code>start= </code> !
+<b>NOTE</b> the list of required services may be slightly different on your system. 
+Use the PowerShell command from <a href="#ConfigureServices">section 4</a> to obtain
+a list.
+<br>
+<b>NOTE</b> the space after the <code>depend= </code> !
 </li>
 <li>Remove the <code>portproxy</code> rule by typing
 <pre>
   netsh interface portproxy delete v4tov4 listenaddress=10.255.255.1 listenport=445
 </pre>
+</li>
+<li>Remove the firewall rule to allow SSH to do portforwarding from 10.255.255.1:
+  <ul>
+    <li>Go to the Windows Control Panel</li>
+    <li>Select <b>System and Security</b>, then <b>Windows Defender Firewall</b></li>
+    <li>Select <b>Allowed apps</b>, and scroll down in the list to 
+        <b>SSH, Telnet and Rlogin client</b> and deselect the permissions<br>
+        <img src="../images/Win10FirewallAllowedApps.png" alt="firewallAllowedApps" width="800">
+        <br>Then press <b>OK</b>
+    </li>
+  </ul>
 </li>
 <li>Start a <code>Device Manager</code> by typing
 <pre>
