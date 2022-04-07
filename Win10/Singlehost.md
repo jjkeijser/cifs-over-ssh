@@ -110,15 +110,17 @@ previous step:
   - The space after the `"depend= "` is required!
   - Dependencies are separated using slashes ("/").
 
+
 - Next we add a `portproxy` rule to reroute TCP port 445 to a port of
-    our choosing. For this tutorial, I choose **44445**:
+  our choosing. For this tutorial, I choose **44445**:
 ```
   netsh interface portproxy add v4tov4 listenaddress=127.0.0.1 listenport=445
         connectaddress=127.0.0.1 connectport=44445
 ```
 
   **NOTE**:
-   - The `connectaddress`  must be identical to the `listenaddress`
+  The `connectaddress`  must be identical to the `listenaddress`
+
 
 If all went well you should see something like
 ![ConfigureConsole](../images/Win10portproxy.png)
@@ -138,6 +140,8 @@ Of course, now that we have made modifications to the 'Required Services' depend
   netstat -an | find ":445 "
 ```
   You should see something like:
+
+
   ![Netstat](../images/Win10netstat.png)
   
 
@@ -184,11 +188,18 @@ a special OpenSSH connection and mounting our Nikhef home directory as a Windows
 - The first time you start the command with the special
   port forwarding rules, you will be (probably) be prompted by the Windows
   Defender Firewall that it has blocked some features:
+
+
   ![sshFirewall](../images/Win10SSHFirewall.png)
+
+
   Allow access to at least **Public** networks by ticking the checkbox,
   then click on **Allow access** as otherwise the port-forwarding will not work.
 - Make sure port-forwarding is working properly by checking the (verbose) log:
+
+
   ![sshLog1](../images/Win10SSHLog1.png)
+
 
   Make sure the line
 ```
@@ -203,7 +214,11 @@ a special OpenSSH connection and mounting our Nikhef home directory as a Windows
   debug1: Connection to port 44445 forwarding to fs.example.org:445 requested.
 ``` 
   as in the following screenshot:
+
+
  ![sshLog2](../images/Win10SSHLog2.png)
+
+
  If this is present then you can decrease the debug logging of the OpenSSH session 
  by removing the `-v` option from the command line:
 ```
@@ -214,11 +229,12 @@ a special OpenSSH connection and mounting our Nikhef home directory as a Windows
   the (built-in) OpenSSH Authentication Agent in combination with an SSH public/private keypair to
   avoid having to type in my Nikhef password every time.
 - You will be prompted to authenticate yourself:
+
+
   ![networkLogin](../images/Win10NetworkCreds.png)
 
-  For the *Username*, fill in the domain **DOMAIN**\ followed
-  by your userid.
 
+  For the *Username*, fill in the domain **DOMAIN**\ followed by your userid.
 - You should now see your remote share in Windows Explorer!
 
 
@@ -228,21 +244,28 @@ To make life even easier it might be handy to map a network drive to your remote
 
 - Start Windows Explorer and choose **Tools->Map Network Drive**.
 - In the next screen, fill in:
+
+
   ![mapNetworkDrive](../images/Win10MapNetworkDrive.png)
+
+
 - Choose an available drive letter.
 - Do **NOT** click on *Browse* but type in as the *Folder* name:
   **\\127.0.0.1\<directory>**
 - Enable the checkbox in front of **Connect using different credentials**.
 - Now click on **Finish**.
-- In the next screen, fill in your Nikhef-Windows userid:<br>
+- In the next screen, fill in your Nikhef-Windows userid:
+
+
   ![networkLogin](../images/Win10NetworkCreds.png)
 
-  For the *Username*, fill in the domain **DOMAIN**\ followed
-  by your userid.
+
+  For the *Username*, fill in the domain **DOMAIN**\ followed by your userid.
 - In the next screen, click on **Finish** to complete the network drive mapping.
 - You should now see a new drive letter appear in the *Folders* tree-list
   in Windows Explorer. Click on it to verify that you are indeed viewing your
   Nikhef home directory.
+
 
 ## Control+Z! Undo! Undo!
 
@@ -253,12 +276,12 @@ For those wishing to undo the CIFS-over-SSH trick follow these steps:
 ```
   sc config lanmanserver depend= samss/srv2
 ```
-**NOTE** the list of required services may be slightly different on your system. 
-Use the PowerShell command from <a href="#ConfigureServices">section 4</a> to obtain
-a list.
-
-
-**NOTE** the space after the `depend= ` !
+**NOTES**
+  - the list of required services may be slightly different on your system. 
+    Use the PowerShell command from
+    <a href="#tweaking-the-lanmanserver-service">this section</a>
+    to obtain a list.
+  - the space after the `depend= ` !
 - Remove the `portproxy` rule by typing
 ```
   netsh interface portproxy delete v4tov4 listenaddress=127.0.0.1 listenport=445
@@ -268,7 +291,10 @@ a list.
   - Select **System and Security**, then **Windows Defender Firewall**</li>
   - Select **Allowed apps**, and scroll down in the list to 
     **SSH Telnet and Rlogin client** and deselect the permissions
+
     [!firewallAllowedApps](../images/Win10FirewallAllowedApps.png)
+
+
     Then press **OK**
 - Start a `Device Manager` by typing
 ```
