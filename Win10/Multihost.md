@@ -255,12 +255,9 @@ previous step:
   our choosing. For this tutorial, I choose **44445**. We need to do this for
   each of the IP addresses that we set up in the previous section:
 ```
-  netsh interface portproxy add v4tov4 listenaddress=10.255.255.1 listenport=445
-        connectaddress=10.255.255.1 connectport=44445
-  netsh interface portproxy add v4tov4 listenaddress=10.255.255.2 listenport=445
-        connectaddress=10.255.255.2 connectport=44445
-  netsh interface portproxy add v4tov4 listenaddress=10.255.255.3 listenport=445
-        connectaddress=10.255.255.3 connectport=44445
+  netsh interface portproxy add v4tov4 listenaddress=10.255.255.1 listenport=445 connectaddress=10.255.255.1 connectport=44445
+  netsh interface portproxy add v4tov4 listenaddress=10.255.255.2 listenport=445 connectaddress=10.255.255.2 connectport=44445
+  netsh interface portproxy add v4tov4 listenaddress=10.255.255.3 listenport=445 connectaddress=10.255.255.3 connectport=44445
 ```
 
   **NOTE**:
@@ -268,7 +265,7 @@ previous step:
 
 
 If all went well you should see something like
-
+XXX FIX
 <img src="../images/Win10portproxy.png" alt="ConfigureConsole" width="700">
 
 The `portproxy` rule is persistent, so there should be no need to repeat
@@ -287,7 +284,7 @@ Of course, now that we have made modifications to the 'Required Services' depend
   netstat -an | find ":445 "
 ```
   You should see something like:
-
+  XXX FIX
   <img src="../images/Win10netstat.png" alt="Netstat" width="480">
 
   If you see **only** '`0.0.0.0:445`' instead then the 'portproxy' rule was 
@@ -365,7 +362,10 @@ a special OpenSSH connection and mounting the shares from the remote servers `fs
  If this is present then you can decrease the debug logging of the OpenSSH session 
  by removing the `-v` option from the command line:
 ```
-  ssh -N -n -L 10.255.255.1:44445:fs.example.org:445 <Your-userid>@login.example.org
+  ssh -N -n -L 10.255.255.1:44445:fs1.example.org:445 \
+            -L 10.255.255.2:44445:fs2.example.org:445 \
+            -L 10.255.255.3:44445:fs3.example.org:445 \
+            <Your-userid>@login.example.org
 ```
   **Note** 
   If you carefully inspect the above screenshot then you will notice that I am using
@@ -418,9 +418,12 @@ For those wishing to undo the CIFS-over-SSH trick follow these steps:
     <a href="#tweaking-the-lanmanserver-service">this section</a>
     to obtain a list.
   - the space after the `depend= ` !
-- Remove the `portproxy` rule by typing
+- Remove the `portproxy` rules by typing
 ```
   netsh interface portproxy delete v4tov4 listenaddress=10.255.255.1 listenport=445
+  netsh interface portproxy delete v4tov4 listenaddress=10.255.255.2 listenport=445
+  netsh interface portproxy delete v4tov4 listenaddress=10.255.255.3 listenport=445
+  ....
 ```
 - Remove the firewall rule to allow SSH to do portforwarding from 10.255.255.1:
   - Go to the Windows Control Panel</li>
