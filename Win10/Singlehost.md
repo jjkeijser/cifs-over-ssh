@@ -40,7 +40,11 @@ Starting with Windows 10 update 1903 we need to disable the Windows feature `SMB
 - Go to the **Control Panel->Programs->Programs and Features** and select
   **Turn Windows features on or off**
 - A list of features pops up:
+
+
   ![FeatureSMB 1.0](../images/Win10-disable-smb-cifs1.0.png)
+
+
   Scroll down and deselect the feature **SMB 1.0/CIFS File Sharing support**
 - Now close this control panel item. 
 
@@ -123,7 +127,9 @@ previous step:
 
 
 If all went well you should see something like
+
 ![ConfigureConsole](../images/Win10portproxy.png)
+
 The `portproxy` rule is persistent, so there should be no need to repeat
 this step after a reboot.
 
@@ -141,9 +147,7 @@ Of course, now that we have made modifications to the 'Required Services' depend
 ```
   You should see something like:
 
-
   ![Netstat](../images/Win10netstat.png)
-  
 
   If you see **only** '`0.0.0.0:445`' instead then the 'portproxy' rule was 
   not applied correctly.  Verify that the right 'portproxy' rule was used
