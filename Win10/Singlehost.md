@@ -205,7 +205,7 @@ a special OpenSSH connection and mounting our Nikhef home directory as a Windows
 ```
     is present before continuing.
 
-- Go to **Start->Run** and type **\\127.0.0.1**\
+- Go to **Start->Run** and type `\\127.0.0.1\`
 - In the Console window you should now see a line 
 ```
   debug1: Connection to port 44445 forwarding to fs.example.org:445 requested.
@@ -227,7 +227,7 @@ a special OpenSSH connection and mounting our Nikhef home directory as a Windows
 
   <img src="../images/Win10NetworkCreds.png" alt="networkLogin" width="500">
 
-  For the *Username*, fill in the domain **DOMAIN**\ followed by your userid.
+  For the *Username*, fill in the domain `DOMAIN\` followed by your userid.
 - You should now see your remote share in Windows Explorer!
 
 
@@ -241,15 +241,14 @@ To make life even easier it might be handy to map a network drive to your remote
   <img src="../images/Win10MapNetworkDrive.png" alt="mapNetworkDrive" width="500">
 
 - Choose an available drive letter.
-- Do **NOT** click on *Browse* but type in as the *Folder* name:
-  **\\127.0.0.1\<directory>**
+- Do **NOT** click on *Browse* but type in as the *Folder* name: `\\127.0.0.1\<directory>`
 - Enable the checkbox in front of **Connect using different credentials**.
 - Now click on **Finish**.
 - In the next screen, fill in your Nikhef-Windows userid:
 
   <img src="../images/Win10NetworkCreds.png" alt="networkLogin" width="500">
 
-  For the *Username*, fill in the domain **DOMAIN**\ followed by your userid.
+  For the *Username*, fill in the domain `DOMAIN\` followed by your userid.
 - In the next screen, click on **Finish** to complete the network drive mapping.
 - You should now see a new drive letter appear in the *Folders* tree-list
   in Windows Explorer. Click on it to verify that you are indeed viewing your
