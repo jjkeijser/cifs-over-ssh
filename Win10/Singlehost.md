@@ -126,7 +126,7 @@ previous step:
 
 If all went well you should see something like
 
-![ConfigureConsole](../images/Win10portproxy.png)
+<img src="../images/Win10portproxy.png" alt="ConfigureConsole" width="700">
 
 The `portproxy` rule is persistent, so there should be no need to repeat
 this step after a reboot.
@@ -145,7 +145,7 @@ Of course, now that we have made modifications to the 'Required Services' depend
 ```
   You should see something like:
 
-  ![Netstat](../images/Win10netstat.png)
+  <img src="../images/Win10netstat.png" alt="Netstat" width="480">
 
   If you see **only** '`0.0.0.0:445`' instead then the 'portproxy' rule was 
   not applied correctly.  Verify that the right 'portproxy' rule was used
@@ -191,17 +191,13 @@ a special OpenSSH connection and mounting our Nikhef home directory as a Windows
   port forwarding rules, you will be (probably) be prompted by the Windows
   Defender Firewall that it has blocked some features:
 
-
-  ![sshFirewall](../images/Win10SSHFirewall.png)
-
+  <img src="../images/Win10SSHFirewall.png" alt="sshFirewall" width="600">
 
   Allow access to at least **Public** networks by ticking the checkbox,
   then click on **Allow access** as otherwise the port-forwarding will not work.
 - Make sure port-forwarding is working properly by checking the (verbose) log:
 
-
-  ![sshLog1](../images/Win10SSHLog1.png)
-
+  <img src="../images/Win10SSHLog1.png" alt="sshLog1" width="800">
 
   Make sure the line
 ```
@@ -216,9 +212,7 @@ a special OpenSSH connection and mounting our Nikhef home directory as a Windows
 ``` 
   as in the following screenshot:
 
-
- ![sshLog2](../images/Win10SSHLog2.png)
-
+  <img src="../images/Win10SSHLog2.png" alt="sshLog2" width="800">
 
  If this is present then you can decrease the debug logging of the OpenSSH session 
  by removing the `-v` option from the command line:
@@ -231,9 +225,7 @@ a special OpenSSH connection and mounting our Nikhef home directory as a Windows
   avoid having to type in my Nikhef password every time.
 - You will be prompted to authenticate yourself:
 
-
-  ![networkLogin](../images/Win10NetworkCreds.png)
-
+  <img src="../images/Win10NetworkCreds.png" alt="networkLogin" width="500">
 
   For the *Username*, fill in the domain **DOMAIN**\ followed by your userid.
 - You should now see your remote share in Windows Explorer!
@@ -246,9 +238,7 @@ To make life even easier it might be handy to map a network drive to your remote
 - Start Windows Explorer and choose **Tools->Map Network Drive**.
 - In the next screen, fill in:
 
-
-  ![mapNetworkDrive](../images/Win10MapNetworkDrive.png)
-
+  <img src="../images/Win10MapNetworkDrive.png" alt="mapNetworkDrive" width="500">
 
 - Choose an available drive letter.
 - Do **NOT** click on *Browse* but type in as the *Folder* name:
@@ -257,9 +247,7 @@ To make life even easier it might be handy to map a network drive to your remote
 - Now click on **Finish**.
 - In the next screen, fill in your Nikhef-Windows userid:
 
-
-  ![networkLogin](../images/Win10NetworkCreds.png)
-
+  <img src="../images/Win10NetworkCreds.png" alt="networkLogin" width="500">
 
   For the *Username*, fill in the domain **DOMAIN**\ followed by your userid.
 - In the next screen, click on **Finish** to complete the network drive mapping.
@@ -293,7 +281,7 @@ For those wishing to undo the CIFS-over-SSH trick follow these steps:
   - Select **Allowed apps**, and scroll down in the list to 
     **SSH Telnet and Rlogin client** and deselect the permissions
 
-    ![firewallAllowedApps](../images/Win10FirewallAllowedApps.png)
+    <img src="../images/Win10FirewallAllowedApps.png" alt="firewallAllowedApps" width="800">
 
     Then press **OK**
 - Start a `Device Manager` by typing
