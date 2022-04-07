@@ -188,12 +188,14 @@ instructions to see if that works better for you.
 ## Putting it all together
 
 Now that we have configured both our loopback adapter we can put it all together by launching 
-a special OpenSSH connection and mounting our Nikhef home directory as a Windows share:
+a special OpenSSH connection and mounting the shares from the remote server `fs1.example.org`
+as a Windows share:
 
 - Launch an OpenSSH session with some special port-forwarding rules and login on 
   `login.example.org` as normal. Open a Command console or terminal and type:
 ```
-  ssh -v -N -n -L 127.0.0.1:44445:fs.example.org:445 <Your-userid>@login.example.org
+  ssh -v -N -n -L 127.0.0.1:44445:fs.example.org:445 \
+               <Your-userid>@login.example.org
 ```
   Yes, there are lots of colons in that `-L` option but you need them all.
 
@@ -232,7 +234,7 @@ a special OpenSSH connection and mounting our Nikhef home directory as a Windows
   **Note** 
   If you carefully inspect the above screenshot then you will notice that I am using
   the (built-in) OpenSSH Authentication Agent in combination with an SSH public/private keypair to
-  avoid having to type in my Nikhef password every time.
+  avoid having to type in my password every time.
 - You will be prompted to authenticate yourself:
 
   <img src="../images/Win10NetworkCreds.png" alt="networkLogin" width="500">
@@ -254,15 +256,15 @@ To make life even easier it might be handy to map a network drive to your remote
 - Do **NOT** click on *Browse* but type in as the *Folder* name: `\\127.0.0.1\<directory>`
 - Enable the checkbox in front of **Connect using different credentials**.
 - Now click on **Finish**.
-- In the next screen, fill in your Nikhef-Windows userid:
+- In the next screen, fill in your Windows userid:
 
   <img src="../images/Win10NetworkCreds.png" alt="networkLogin" width="500">
 
   For the *Username*, fill in the domain `DOMAIN\` followed by your userid.
 - In the next screen, click on **Finish** to complete the network drive mapping.
 - You should now see a new drive letter appear in the *Folders* tree-list
-  in Windows Explorer. Click on it to verify that you are indeed viewing your
-  Nikhef home directory.
+  in Windows Explorer. Click on it to verify that you are indeed viewing the remote
+  share.
 
 
 ## Control+Z! Undo! Undo!

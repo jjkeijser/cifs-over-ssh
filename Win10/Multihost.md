@@ -156,6 +156,10 @@ it properly:
 
   Add an IP address for each of the *extra* remote hosts that you want to mount shares from.
 
+  For example, if you need to mount shares from 3 different servers, repeat this step twice,
+  filling in 'IP Address' = **10.255.255.2**, 'Subnet mask' = **255.255.255.0** and
+  'IP Address' = **10.255.255.3**, 'Subnet mask' = **255.255.255.0**.
+
 - Click on the **WINS** tab:
 
   <img src="../images/Win10LoopPropertiesWINS.png" alt="loopPropertiesWINS" width="400">
@@ -248,10 +252,15 @@ previous step:
 
 
 - Next we add a `portproxy` rule to reroute TCP port 445 to a port of
-  our choosing. For this tutorial, I choose **44445**:
+  our choosing. For this tutorial, I choose **44445**. We need to do this for
+  each of the IP addresses that we set up in the previous section:
 ```
   netsh interface portproxy add v4tov4 listenaddress=10.255.255.1 listenport=445
         connectaddress=10.255.255.1 connectport=44445
+  netsh interface portproxy add v4tov4 listenaddress=10.255.255.2 listenport=445
+        connectaddress=10.255.255.2 connectport=44445
+  netsh interface portproxy add v4tov4 listenaddress=10.255.255.3 listenport=445
+        connectaddress=10.255.255.3 connectport=44445
 ```
 
   **NOTE**:
@@ -313,12 +322,16 @@ instructions to see if that works better for you.
 ## Putting it all together
 
 Now that we have configured both our loopback adapter we can put it all together by launching 
-a special OpenSSH connection and mounting our Nikhef home directory as a Windows share:
+a special OpenSSH connection and mounting the shares from the remote servers `fs1.example.org`,
+`fs2.example.org` and `fs3.example.org` as Windows shares:
 
 - Launch an OpenSSH session with some special port-forwarding rules and login on 
   `login.example.org` as normal. Open a Command console or terminal and type:
 ```
-  ssh -v -N -n -L 10.255.255.1:44445:fs.example.org:445 <Your-userid>@login.example.org
+  ssh -v -N -n -L 10.255.255.1:44445:fs1.example.org:445 \
+               -L 10.255.255.2:44445:fs2.example.org:445 \
+               -L 10.255.255.3:44445:fs3.example.org:445 \
+                <Your-userid>@login.example.org
 ```
   Yes, there are lots of colons in that `-L` option but you need them all.
 
@@ -357,7 +370,7 @@ a special OpenSSH connection and mounting our Nikhef home directory as a Windows
   **Note** 
   If you carefully inspect the above screenshot then you will notice that I am using
   the (built-in) OpenSSH Authentication Agent in combination with an SSH public/private keypair to
-  avoid having to type in my Nikhef password every time.
+  avoid having to type in my password every time.
 - You will be prompted to authenticate yourself:
 
   <img src="../images/Win10NetworkCreds.png" alt="networkLogin" width="500">
@@ -379,15 +392,15 @@ To make life even easier it might be handy to map a network drive to your remote
 - Do **NOT** click on *Browse* but type in as the *Folder* name: `\\10.255.255.1\<directory>`
 - Enable the checkbox in front of **Connect using different credentials**.
 - Now click on **Finish**.
-- In the next screen, fill in your Nikhef-Windows userid:
+- In the next screen, fill in your Windows userid:
 
   <img src="../images/Win10NetworkCreds.png" alt="networkLogin" width="500">
 
   For the *Username*, fill in the domain `DOMAIN\` followed by your userid.
 - In the next screen, click on **Finish** to complete the network drive mapping.
 - You should now see a new drive letter appear in the *Folders* tree-list
-  in Windows Explorer. Click on it to verify that you are indeed viewing your
-  Nikhef home directory.
+  in Windows Explorer. Click on it to verify that you are indeed viewing the remote
+  shares from each server.
 
 
 ## Control+Z! Undo! Undo!
