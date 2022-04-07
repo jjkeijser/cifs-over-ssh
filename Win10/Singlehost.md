@@ -181,7 +181,7 @@ Of course, now that we have made modifications to the 'Required Services' depend
 
 If the port is not grabbed correctly (i.e. no `127.0.0.1:445` in the `netstat` output)
 then try the 
-[Old driver tweak](https://jjkeijser.github.io/cifs-over-ssh/Win10/Win10ConfigureServices.htmlfigureServices.html)
+[Old driver tweak](https://jjkeijser.github.io/cifs-over-ssh/Win10/Win10ConfigureServices.html)
 instructions to see if that works better for you.
 
 
