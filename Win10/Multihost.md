@@ -136,7 +136,9 @@ it properly:
 
   <img src="../images/Win10LoopPropertiesTCPIP.png" alt="loopPropertiesTCPIP" width="400">
 
-  Select **Use the following IP address** and fill in the 'IP address' and 'Subnet mask' as above.
+  Select **Use the following IP address** and fill in for the  'IP address' **10.255.255.1**
+  and for the 'Subnet mask' **255.255.255.0**. This IP address will be used to mount
+  shares from the first remote host.
 
   It is not necessary to fill in the 'Default gateway' or a 'DNS server'.
 
@@ -146,6 +148,14 @@ it properly:
 
   Deselect **Automatic metric** and fill in the value of **9999**
   as the 'Interface metric' as shown above.
+
+- In the same window, click on the button **Add** in the block labeled **IP addresses**.
+  A new window will pop up:
+
+  <img src="../images/Win10LoopPropertiesTCPIPaddIP.png" alt="loopPropertiesTCPIPaddIP">
+
+  Add an IP address for each of the *extra* remote hosts that you want to mount shares from.
+
 - Click on the **WINS** tab:
 
   <img src="../images/Win10LoopPropertiesWINS.png" alt="loopPropertiesWINS" width="400">
@@ -240,8 +250,8 @@ previous step:
 - Next we add a `portproxy` rule to reroute TCP port 445 to a port of
   our choosing. For this tutorial, I choose **44445**:
 ```
-  netsh interface portproxy add v4tov4 listenaddress=127.0.0.1 listenport=445
-        connectaddress=127.0.0.1 connectport=44445
+  netsh interface portproxy add v4tov4 listenaddress=10.255.255.1 listenport=445
+        connectaddress=10.255.255.1 connectport=44445
 ```
 
   **NOTE**:
@@ -294,7 +304,7 @@ Of course, now that we have made modifications to the 'Required Services' depend
   [these steps](https://jjkeijser.github.io/cifs-over-ssh/WinAddTask.html)
   to create a task using the Task Schedule to start it at system startup.
 
-If the port is not grabbed correctly (i.e. no `127.0.0.1:445` in the `netstat` output)
+If the port is not grabbed correctly (i.e. no `10.255.255.1:445` in the `netstat` output)
 then try the 
 [Old driver tweak](https://jjkeijser.github.io/cifs-over-ssh/Win10/Win10ConfigureServices.html)
 instructions to see if that works better for you.
@@ -308,7 +318,7 @@ a special OpenSSH connection and mounting our Nikhef home directory as a Windows
 - Launch an OpenSSH session with some special port-forwarding rules and login on 
   `login.example.org` as normal. Open a Command console or terminal and type:
 ```
-  ssh -v -N -n -L 127.0.0.1:44445:fs.example.org:445 <Your-userid>@login.example.org
+  ssh -v -N -n -L 10.255.255.1:44445:fs.example.org:445 <Your-userid>@login.example.org
 ```
   Yes, there are lots of colons in that `-L` option but you need them all.
 
@@ -326,11 +336,11 @@ a special OpenSSH connection and mounting our Nikhef home directory as a Windows
 
   Make sure the line
 ```
-  debug1: Local connections to 127.0.0.1:44445 forwarded to remote address fs.example.org:445
+  debug1: Local connections to 10.255.255.1:44445 forwarded to remote address fs.example.org:445
 ```
     is present before continuing.
 
-- Go to **Start->Run** and type `\\127.0.0.1\`
+- Go to **Start->Run** and type `\\10.255.255.1\`
 - In the Console window you should now see a line 
 ```
   debug1: Connection to port 44445 forwarding to fs.example.org:445 requested.
@@ -342,7 +352,7 @@ a special OpenSSH connection and mounting our Nikhef home directory as a Windows
  If this is present then you can decrease the debug logging of the OpenSSH session 
  by removing the `-v` option from the command line:
 ```
-  ssh -N -n -L 127.0.0.1:44445:fs.example.org:445 <Your-userid>@login.example.org
+  ssh -N -n -L 10.255.255.1:44445:fs.example.org:445 <Your-userid>@login.example.org
 ```
   **Note** 
   If you carefully inspect the above screenshot then you will notice that I am using
@@ -366,7 +376,7 @@ To make life even easier it might be handy to map a network drive to your remote
   <img src="../images/Win10MapNetworkDrive.png" alt="mapNetworkDrive" width="500">
 
 - Choose an available drive letter.
-- Do **NOT** click on *Browse* but type in as the *Folder* name: `\\127.0.0.1\<directory>`
+- Do **NOT** click on *Browse* but type in as the *Folder* name: `\\10.255.255.1\<directory>`
 - Enable the checkbox in front of **Connect using different credentials**.
 - Now click on **Finish**.
 - In the next screen, fill in your Nikhef-Windows userid:
@@ -397,9 +407,9 @@ For those wishing to undo the CIFS-over-SSH trick follow these steps:
   - the space after the `depend= ` !
 - Remove the `portproxy` rule by typing
 ```
-  netsh interface portproxy delete v4tov4 listenaddress=127.0.0.1 listenport=445
+  netsh interface portproxy delete v4tov4 listenaddress=10.255.255.1 listenport=445
 ```
-- Remove the firewall rule to allow SSH to do portforwarding from 127.0.0.1:
+- Remove the firewall rule to allow SSH to do portforwarding from 10.255.255.1:
   - Go to the Windows Control Panel</li>
   - Select **System and Security**, then **Windows Defender Firewall**</li>
   - Select **Allowed apps**, and scroll down in the list to 
