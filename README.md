@@ -28,9 +28,9 @@ This tutorial has been tested on Windows 2000, XP, Vista, 7, 8 and 10.
 For Windows 10+, the tutorial is now split into multiple parts, depending on the type of remote server
 access that is required:
 
-- [Access to a single remote host, no Kerberos](Win10/Singlehost.md)
-- [Access to multiple remote hosts, including DFS, no Kerberos](Win10/Multihost.md)
-- [Access to multiple remote hosts, including DFS and Kerberos](Win10/MultihostKerberos.md)
+- [Access to a single remote host, no Kerberos](https://github.com/jjkeijser/cifs-over-ssh/blob/main/Win10/Singlehost.md)
+- [Access to multiple remote hosts, including DFS, no Kerberos](https://github.com/jjkeijser/cifs-over-ssh/blob/main/Win10/Multihost.md)
+- [Access to multiple remote hosts, including DFS and Kerberos](https://github.com/jjkeijser/cifs-over-ssh/blob/main    /Win10/MultihostKerberos.md)
 
 ### Legacy tutorials
 The following legacy tutorial pages are also available as single HTML pages:
