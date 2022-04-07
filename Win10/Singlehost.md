@@ -4,6 +4,9 @@
 ## Introduction
 
 This tutorial contains screenshots for the English version of Windows 10.
+Please note that in some screenshots references are made to '10.255.255.1'.
+That is because these screenshots are shared with the [Multi-host](Multihost.md)
+version.
 
 
 To be able to mount a Windows share on a single remote host over SSH we will need 
@@ -173,12 +176,13 @@ Of course, now that we have made modifications to the 'Required Services' depend
 ```
   The 'LanmanServer' service should be in the state **Running**. 
   If it is not, then follow 
-  [these steps](WinAddTask.html) to create a task using the Task Schedule
-  to start it at system startup.
+  [these steps](https://jjkeijser.github.io/cifs-over-ssh/WinAddTask.html)
+  to create a task using the Task Schedule to start it at system startup.
 
 If the port is not grabbed correctly (i.e. no `127.0.0.1:445` in the `netstat` output)
-then try the [Old driver tweak](Win10ConfigureServices.html) instructions to see if that
-works better for you.
+then try the 
+[Old driver tweak](https://jjkeijser.github.io/cifs-over-ssh/Win10/Win10ConfigureServices.htmlfigureServices.html)
+instructions to see if that works better for you.
 
 
 ## Putting it all together
