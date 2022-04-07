@@ -29,17 +29,17 @@ and the [Multi-host](Multihost.md) version.
 
 This part of the tutorial is split into the following steps:
 
-- Starting with Windows 10 update 1903, the Windows 10 feature "SMB 1.0" must be 
-  <a href="#disabling-the-smb-10-windows-feature">turned off</a>.
-- Furthermore, a few Windows system services need to be
-  <a href="#tweaking-the-lanmanserver-service">tweaked</a>.
-- Next, reboot Windows to <a href="#reboot-and-verify">verify</a> that we've been able to 
-  grab port 445 and to see if the `lanmanserver` service is up and running.
-- Finally, we launch a special OpenSSH session and 
-  <a href="#mapping-a-network-drive">mount</a> our remote share.
+1.  Starting with Windows 10 update 1903, the Windows 10 feature "SMB 1.0" must be 
+   <a href="#disabling-the-smb-10-windows-feature">turned off</a>.
+2. Furthermore, a few Windows system services need to be
+   <a href="#tweaking-the-lanmanserver-service">tweaked</a>.
+3. Next, reboot Windows to <a href="#reboot-and-verify">verify</a> that we've been able to 
+   grab port 445 and to see if the `lanmanserver` service is up and running.
+4. Finally, we launch a special OpenSSH session and 
+   <a href="#mapping-a-network-drive">mount</a> our remote share.
 
-- For those wishing to <a href="#controlz-undo-undo">undo</a> the above steps follow the 
-  instructions at the bottom of this page.
+5. For those wishing to <a href="#controlz-undo-undo">undo</a> the above steps follow the 
+   instructions at the bottom of this page.
 
 
 ## Disabling the 'SMB 1.0' Windows feature
