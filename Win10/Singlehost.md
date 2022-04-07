@@ -41,9 +41,7 @@ Starting with Windows 10 update 1903 we need to disable the Windows feature `SMB
   **Turn Windows features on or off**
 - A list of features pops up:
 
-
-  ![FeatureSMB 1.0](../images/Win10-disable-smb-cifs1.0.png)
-
+  <img src="../images/Win10-disable-smb-cifs1.0.png" alt="FeatureSMB 1.0" width="600">
 
   Scroll down and deselect the feature **SMB 1.0/CIFS File Sharing support**
 - Now close this control panel item. 
@@ -209,10 +207,9 @@ a special OpenSSH connection and mounting our Nikhef home directory as a Windows
 ```
   debug1: Local connections to 127.0.0.1:44445 forwarded to remote address fs.example.org:445
 ```
-  is present before continuing.
+    is present before continuing.
 
 - Go to **Start->Run** and type **\\127.0.0.1**\
-
 - In the Console window you should now see a line 
 ```
   debug1: Connection to port 44445 forwarding to fs.example.org:445 requested.
@@ -296,16 +293,16 @@ For those wishing to undo the CIFS-over-SSH trick follow these steps:
   - Select **Allowed apps**, and scroll down in the list to 
     **SSH Telnet and Rlogin client** and deselect the permissions
 
-    [!firewallAllowedApps](../images/Win10FirewallAllowedApps.png)
-
+    ![firewallAllowedApps](../images/Win10FirewallAllowedApps.png)
 
     Then press **OK**
 - Start a `Device Manager` by typing
 ```
   devmgmt.msc
 ```
-    Expand the 'Network Adapters', right-click on **Loopback adapter** and select 
-    **Uninstall**.
+
+- Expand the 'Network Adapters', right-click on **Loopback adapter** and select 
+  **Uninstall**.
 - If necessary, use the 'Task Scheduler' from the 'Administrative Tasks' menu to delete the
-    task 'Start LanmanServer driver'
+  task 'Start LanmanServer driver'.
 
