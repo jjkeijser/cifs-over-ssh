@@ -1,4 +1,5 @@
-# CIFS-over-SSH for Windows 10: Access to multiple remote hosts, including DFS, no Kerberos
+# CIFS-over-SSH for Windows 10
+## Access to multiple remote hosts, including DFS, no Kerberos
 *(tested Win10 1809,1909,20H2,21H1,21H2)*
 
 ## Introduction
@@ -25,9 +26,9 @@ This part of the tutorial is split into the following steps:
 
 1. As most people do not have a spare real network adapter in their computer,
    we will add an extra virtual network adapter by
-   <a href="#Install">installing</a> the **Microsoft KM-TEST Loopback Adapter**.
+   <a href="#installing-the-loopback-adapter">installing</a> the **Microsoft KM-TEST Loopback Adapter**.
 2. After that, the network adapter must be properly
-   <a href="#ConfigureAdapter">configured</a>.
+   <a href="#configuring-the-loopback-adapter">configured</a>.
 3. Starting with Windows 10 update 1903, the Windows 10 feature "SMB 1.0" must be 
    <a href="#disabling-the-smb-10-windows-feature">turned off</a>.
 4. Furthermore, a few Windows system services need to be
@@ -63,21 +64,21 @@ To install the Loopback adapter follow these steps:
 ```
   hdwwiz.exe
 ```
-  The Hardware Wizard will come up:
+    The Hardware Wizard will come up:
 
-  <img src="../images/Win10AddHWwiz1.png" alt="wizardStart" width="500">
+    <img src="../images/Win10AddHWwiz1.png" alt="wizardStart" width="500">
 
 - Click **Next** to continue:
 
   <img src="../images/Win10AddHWwiz2.png" alt="manualSelect" width="500">
 
-  Select `Install the hardware that I manually select from a list`
+  Select **Install the hardware that I manually select from a list**
   and click **Next**.
 - Now you'll see:
 
   <img src="../images/Win10AddHWwiz3.png" alt="networkAdapters" width="500">
 
-  Select the entry `Network adapters` and click **Next**.
+  Select the entry **Network adapters** and click **Next**.
 - In the next screen
 
   <img src="../images/Win10AddHWwiz4.png" alt="msLoopback" width="500">
@@ -143,13 +144,13 @@ it properly:
 
   <img src="../images/Win10LoopPropertiesTCPIPAdv.png" alt="loopPropertiesTCPIPAdv" width="400">
 
-  Deselect `Automatic metric` and fill in the value of **9999**
+  Deselect **Automatic metric** and fill in the value of **9999**
   as the 'Interface metric' as shown above.
 - Click on the **WINS** tab:
 
   <img src="../images/Win10LoopPropertiesWINS.png" alt="loopPropertiesWINS" width="400">
 
-  and select `Disable NetBIOS over TCP/IP`.
+  and select **Disable NetBIOS over TCP/IP**.
 
 - Click on **OK**.
 - You are now back in the main 'TCP/IP Properties' screen. Click **OK** again.
