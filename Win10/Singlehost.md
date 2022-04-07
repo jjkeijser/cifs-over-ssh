@@ -18,6 +18,12 @@ Normally you should already have such an adapter, as otherwise you
 would not be able to mount any Windows shares.
 
 
+**Note**
+With Windows 10, it is no longer required to add a `Loopback` adapter to if you need
+access a single remote host. That is the main difference between this tutorial
+and the [Multi-host](Multihost.md) version.
+
+
 This part of the tutorial is split into the following steps:
 
 - Starting with Windows 10 update 1903, the Windows 10 feature "SMB 1.0" must be 
