@@ -60,18 +60,14 @@ To install the Loopback adapter follow these steps:
   **Start->Settings->Control Panel->Add Hardware** or by
   starting a console window with elevated (Administrator) privileges.
   In the console window type
-
 ```
   hdwwiz.exe
 ```
+- The Hardware Wizard will come up:
+  <img src="../images/Win10AddHWwiz1.png" alt="wizardStart" width="500">
+  Click **Next** to continue
 
-    The Hardware Wizard will come up:
-
-    <img src="../images/Win10AddHWwiz1.png" alt="wizardStart" width="500">
-
-- Click **Next** to continue:
-
-  <img src="../images/Win10AddHWwiz2.png" alt="manualSelect" width="500">
+- <img src="../images/Win10AddHWwiz2.png" alt="manualSelect" width="500">
 
   Select **Install the hardware that I manually select from a list**
   and click **Next**.
