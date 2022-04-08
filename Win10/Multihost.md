@@ -70,7 +70,7 @@ To install the Loopback adapter follow these steps:
   Click **Next** to continue.
 - Select **Install the hardware that I manually select from a list**:
 
-- <img src="../images/Win10AddHWwiz2.png" alt="manualSelect" width="500">
+  <img src="../images/Win10AddHWwiz2.png" alt="manualSelect" width="500">
 
   Click **Next** to continue.
 - Select the entry **Network adapters**:
