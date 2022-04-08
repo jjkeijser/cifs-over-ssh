@@ -135,7 +135,7 @@ previous step:
 
 If all went well you should see something like
 
-<img src="../images/Win10portproxy.png" alt="ConfigureConsole" width="700">
+<img src="../images/Win10localhost-portproxy.png" alt="localhost-portproxy" width="700">
 
 The `portproxy` rule is persistent, so there should be no need to repeat
 this step after a reboot.
@@ -153,8 +153,12 @@ Of course, now that we have made modifications to the 'Required Services' depend
   netstat -an | find ":445 "
 ```
   You should see something like:
-
-  <img src="../images/Win10netstat.png" alt="Netstat" width="480">
+```
+C:\WINDOWS\system32>netstat -an | find ":445"
+  TCP    0.0.0.0:445            0.0.0.0:0              LISTENING
+  TCP    127.0.0.1:445          0.0.0.0:0              LISTENING
+  TCP    [::]:445               [::]:0                 LISTENING
+```
 
   If you see **only** '`0.0.0.0:445`' instead then the 'portproxy' rule was 
   not applied correctly.  Verify that the right 'portproxy' rule was used
