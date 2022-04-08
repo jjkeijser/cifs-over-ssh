@@ -1,5 +1,4 @@
-# CIFS-over-SSH for Windows 10
-## Access to multiple remote hosts, including DFS, no Kerberos
+# CIFS-over-SSH: Access to multiple remote hosts, no Kerberos
 *(tested Win10 1809,1909,20H2,21H1,21H2)*
 
 ## Introduction
@@ -265,8 +264,8 @@ previous step:
 
 
 If all went well you should see something like
-XXX FIX
-<img src="../images/Win10portproxy.png" alt="ConfigureConsole" width="700">
+
+<img src="../images/Win10loopback-3ips-portproxy.png" alt="oopback-3ips-portproxy">
 
 The `portproxy` rule is persistent, so there should be no need to repeat
 this step after a reboot.
@@ -281,11 +280,17 @@ Of course, now that we have made modifications to the 'Required Services' depend
 - Verify that the `portproxy` was applied successfully by checking the open ports 
   on the system. Type in a command console
 ```
-  netstat -an | find ":445 "
+  netstat -an | find ":445"
 ```
   You should see something like:
-  XXX FIX
-  <img src="../images/Win10netstat.png" alt="Netstat" width="480">
+```
+C:\WINDOWS\system32>netstat -an | find ":445"
+  TCP    0.0.0.0:445            0.0.0.0:0              LISTENING
+  TCP    10.255.255.1:445       0.0.0.0:0              LISTENING
+  TCP    10.255.255.2:445       0.0.0.0:0              LISTENING
+  TCP    10.255.255.3:445       0.0.0.0:0              LISTENING
+  TCP    [::]:445               [::]:0                 LISTENING
+```
 
   If you see **only** '`0.0.0.0:445`' instead then the 'portproxy' rule was 
   not applied correctly.  Verify that the right 'portproxy' rule was used

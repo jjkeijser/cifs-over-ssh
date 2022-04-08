@@ -1,4 +1,4 @@
-# CIFS-over-SSH for Windows 10: Access to a single remote host, no Kerberos
+# CIFS-over-SSH: Access to a single remote host, no Kerberos
 *(tested Win10 1809,1909,20H2,21H1,21H2)*
 
 ## Introduction
@@ -150,7 +150,7 @@ Of course, now that we have made modifications to the 'Required Services' depend
 - Verify that the `portproxy` was applied successfully by checking the open ports 
   on the system. Type in a command console
 ```
-  netstat -an | find ":445 "
+  netstat -an | find ":445"
 ```
   You should see something like:
 ```
