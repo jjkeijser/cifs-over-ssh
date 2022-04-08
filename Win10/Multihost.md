@@ -67,17 +67,17 @@ To install the Loopback adapter follow these steps:
 
   <img src="../images/Win10AddHWwiz1.png" alt="wizardStart" width="500">
 
-  Click **Next** to continue
+  Click **Next** to continue.
+- Select **Install the hardware that I manually select from a list**:
 
 - <img src="../images/Win10AddHWwiz2.png" alt="manualSelect" width="500">
 
-  Select **Install the hardware that I manually select from a list**
-  and click **Next**.
-- Now you'll see:
+  Click **Next** to continue.
+- Select the entry **Network adapters**:
 
   <img src="../images/Win10AddHWwiz3.png" alt="networkAdapters" width="500">
 
-  Select the entry **Network adapters** and click **Next**.
+  Click **Next** to continue.
 - In the next screen
 
   <img src="../images/Win10AddHWwiz4.png" alt="msLoopback" width="500">
