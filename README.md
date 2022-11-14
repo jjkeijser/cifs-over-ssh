@@ -19,7 +19,7 @@ The concept behind mounting shares using SSH is this:
 - The result is that this will magically allow you to create a network share to view the remote directory
   on your home computer.
 
-This tutorial has been tested on Windows 2000, XP, Vista, 7, 8 and 10.
+This tutorial has been tested on Windows 2000, XP, Vista, 7, 8, 10 and 11.
 
 **Note** This tutorial does not work on Windows Server 2016 or 2019. If someone finds a way to make
   it work for Windows Server editions please let me know!
