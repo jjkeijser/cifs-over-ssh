@@ -1,9 +1,9 @@
 # CIFS-over-SSH: Access to a single remote host, no Kerberos
-*(tested Win10 1809,1909,20H2,21H1,21H2)*
+*(tested Win10 1809,1909,20H2,21H1,21H2,22H2 and Win11 22H2)*
 
 ## Introduction
 
-This tutorial contains screenshots for the English version of Windows 10.
+This tutorial contains screenshots for the English version of Windows 10 and Windows 11.
 Please note that in some screenshots references are made to '10.255.255.1'.
 That is because these screenshots are shared with the [Multi-host](Multihost.md)
 version.
@@ -22,7 +22,7 @@ would not be able to mount any Windows shares.
 
 
 **Note**
-With Windows 10, it is no longer required to add a `Loopback` adapter to if you need
+With Windows 10 & 11, it is no longer required to add a `Loopback` adapter to if you need
 access a single remote host. That is the main difference between this tutorial
 and the [Multi-host](Multihost.md) version.
 
@@ -43,6 +43,10 @@ This part of the tutorial is split into the following steps:
 
 
 ## Disabling the 'SMB 1.0' Windows feature
+
+**NOTE**: for a lot of users this does not seem to apply. I have left this step in the tutorial,
+as it is good security practice anyways.
+
 
 Starting with Windows 10 update 1903 we need to disable the Windows feature `SMB 1.0`:
 
@@ -171,7 +175,7 @@ C:\WINDOWS\system32>netstat -an | find ":445"
 ```
   Another reason for the 'port grabbing' to fail could be the `LanmanWorkstation` service 
   running at Windows startup. If so, try giving it the same treatment as `LanmanServer`.
-  However, on the Windows 10 installations I tested this service was running at system startup 
+  However, on the Windows 10 & 11 installations I tested this service was running at system startup 
   without causing any problems.
 - After Windows comes up and you have logged in, check the status of the 'lanmanserver' service. Open
   a command console (no privilege elevation is required) and type
