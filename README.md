@@ -1,7 +1,7 @@
 ## CIFS-over-SSH 
 Sometimes there is a need to mount a remote Windows/Samba directory, but all you have is
 an SSH connection to a remote server close to the fileserver. 
-This tutorial tries to explain how you can set up these Windows shares on Windows 10.
+This tutorial tries to explain how you can set up these Windows shares on Windows 10 & 11.
 
 The concept behind mounting shares using SSH is this:
 
@@ -30,7 +30,7 @@ access that is required:
 
 - [Access to a single remote host, no Kerberos](https://github.com/jjkeijser/cifs-over-ssh/blob/main/Win10/Singlehost.md)
 - [Access to multiple remote hosts, no Kerberos](https://github.com/jjkeijser/cifs-over-ssh/blob/main/Win10/Multihost.md)
-- [Access to multiple remote hosts, including DFS and Kerberos](https://github.com/jjkeijser/cifs-over-ssh/blob/main    /Win10/MultihostKerberos.md)
+- [Access to multiple remote hosts, including DFS and Kerberos](https://github.com/jjkeijser/cifs-over-ssh/blob/main/Win10/MultihostKerberos.md)
 
 ### Legacy tutorials
 The following legacy tutorial pages are also available as single HTML pages:
