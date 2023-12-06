@@ -1,5 +1,5 @@
 # CIFS-over-SSH: Access to a single remote host, no Kerberos
-*(tested Win10 1809,1909,20H2,21H1,21H2,22H2 and Win11 22H2)*
+*(tested Win10 1809,1909,20H2,21H1,21H2,22H2 and Win11 22H2 Home&Enterprise)*
 
 ## Introduction
 

@@ -1,9 +1,9 @@
 # CIFS-over-SSH: Access to multiple remote hosts, no Kerberos
-*(tested Win10 1809,1909,20H2,21H1,21H2)*
+*(tested Win10 1809,1909,20H2,21H1,21H2,22H2 and Win11 22H2 Home&Enterprise)*
 
 ## Introduction
 
-This tutorial contains screenshots for the English version of Windows 10.
+This tutorial contains screenshots for the English version of Windows 10 and 11.
 
 
 To be able to mount a Windows share on a single remote host over SSH we will need 
